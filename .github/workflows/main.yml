@@ -1,0 +1,7 @@
+stages:
+  - deploy
+
+test-job:
+  stage: deploy
+  script: 
+   - docker compose up -d 
