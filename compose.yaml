@@ -2,8 +2,8 @@ services:
   postgres:
     image: 'postgres'
     environment:
-      - 'POSTGRES_DB=eco_postgres'
+      - 'POSTGRES_DB=eco_postgres_POO'
       - 'POSTGRES_PASSWORD=12345'
       - 'POSTGRES_USER=postgres'
     ports:
-      - '5438:5432'
+      - '5439:5432'
