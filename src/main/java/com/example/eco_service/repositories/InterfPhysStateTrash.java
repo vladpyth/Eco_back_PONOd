@@ -1,12 +1,13 @@
 package com.example.eco_service.repositories;
 
 
-import com.example.eco_service.entities.Region;
+import com.example.eco_service.entities.PhysStateTrash;
+import com.example.eco_service.entities.Technology;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InterfRegion extends JpaRepository<Region, Long>, RevisionRepository<Region, Long, Integer> {
+public interface InterfPhysStateTrash extends JpaRepository<PhysStateTrash , Long>, RevisionRepository<PhysStateTrash, Long, Integer> {
 
 }

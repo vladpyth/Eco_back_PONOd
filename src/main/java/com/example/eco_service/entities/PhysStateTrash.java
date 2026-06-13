@@ -13,22 +13,14 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @Entity
 @Audited
-@Table(name = "MagazinTrash")
-public class MagazinTrash {
+@Table(name = "PhysStateTrash")
+public class PhysStateTrash {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_magazin_trash;
+    private Long id_mame_group;
 
-    @ManyToOne
-    @JoinColumn(name = "id_class_danger")
-    private ClassDanger id_class_danger;
-
-    @Column(nullable = false, unique = true, length = 8)
-    private int code_trash;
-
-    @Column(nullable = false,  length = 50)
-    private String name_trash;
-
+    @Column(nullable = false,unique = true,  length = 150)
+    private String name_group;
 
 }

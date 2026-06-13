@@ -1,25 +1,18 @@
 package com.example.eco_service.routers;
+
 import com.example.eco_service.dto.request.*;
 import com.example.eco_service.entities.*;
-import com.example.eco_service.repositories.*;
-import com.example.eco_service.dto.response.EchoResponse;
 import com.example.eco_service.services.CRUDServices;
-import com.example.eco_service.services.ObjectPlaceTrashService;
+
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,763 +22,466 @@ import java.util.List;
 @Tag(name = "Главный контроллер", description = "API для web")
 public class MainRouters {
 
-    private final CRUDServices aroundBuildService, characteristicTrashService, citiesService, classDangerService,
-                                cleanerBuildsService, commentsOfPlaceService, groupPlaceSaveService, gruopsDegreeService,
-                            levelTrashService, magazinTrashService, nameGroupService, natualSaveBuildingService,
-                        numberPhoneService, physicalStateService, regionService,storageSchemeService, typeTrash1Service,
-                        districtService;
-    private final ObjectPlaceTrashService objectPlaceTrashService;
+    private final CRUDServices service;
 
-    @PostMapping("district")
-    public ResponseEntity<District> createDistrict(@Valid @RequestBody DistrictRequest request) {
-        District entity = districtService.createDistrict(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
+    // ==================== REGION ENDPOINTS ====================
 
-    @GetMapping("district")
-    public ResponseEntity<List<District>> findAllDistricts() {
-        List<District> entities = districtService.findAllDistricts();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("district/{id}")
-    public ResponseEntity<District> findByIdDistrict(@PathVariable Long id) {
-        District entity = districtService.findByIdDistrict(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("district/{id}")
-    public ResponseEntity<District> updateDistrict(
-            @PathVariable Long id,
-            @Valid @RequestBody DistrictRequest request) {
-        District entity = districtService.updateDistrict(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("district/{id}")
-    public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
-        districtService.deleteDistrict(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping("around-build")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<AroundBuild> createAroundBuild(@Valid @RequestBody AroundBuildRequest request) {
-        AroundBuild entity = aroundBuildService.createAroundBuild(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("around-build")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<AroundBuild>> findAllAroundBuild() {
-        List<AroundBuild> entities = aroundBuildService.findAllAroundBuild();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("around-build/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<AroundBuild> findByIdAroundBuild(@PathVariable Long id) {
-        AroundBuild entity = aroundBuildService.findByIdAroundBuild(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("around-build/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<AroundBuild> updateAroundBuild(
-            @PathVariable Long id,
-            @Valid @RequestBody AroundBuildRequest request) {
-        AroundBuild entity = aroundBuildService.updateAroundBuild(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("around-build/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteAroundBuild(@PathVariable Long id) {
-        aroundBuildService.deleteAroundBuild(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-    @PostMapping("characteristic-trash")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<CharacteristicTrash> createCharacteristicTrash(@Valid @RequestBody CharacteristicTrashRequest request) {
-        CharacteristicTrash entity = characteristicTrashService.createCharacteristicTrash(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("characteristic-trash")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<CharacteristicTrash>> findAllCharacteristicTrash() {
-        List<CharacteristicTrash> entities = characteristicTrashService.findAllCharacteristicTrash();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("characteristic-trash/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<CharacteristicTrash> findByIdCharacteristicTrash(@PathVariable Long id) {
-        CharacteristicTrash entity = characteristicTrashService.findByIdCharacteristicTrash(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("characteristic-trash/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<CharacteristicTrash> updateCharacteristicTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody CharacteristicTrashRequest request) {
-        CharacteristicTrash entity = characteristicTrashService.updateCharacteristicTrash(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("characteristic-trash/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteCharacteristicTrash(@PathVariable Long id) {
-        characteristicTrashService.deleteCharacteristicTrash(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-    @PostMapping("cities")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<Cities> createCities(@Valid @RequestBody CitiesRequest request) {
-        Cities entity = citiesService.createCities(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("cities")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<Cities>> findAllCities() {
-        List<Cities> entities = citiesService.findAllCities();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("cities/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<Cities> findByIdCities(@PathVariable Long id) {
-        Cities entity = citiesService.findByIdCities(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("cities/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<Cities> updateCities(
-            @PathVariable Long id,
-            @Valid @RequestBody CitiesRequest request) {
-        Cities entity = citiesService.updateCities(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("cities/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteCities(@PathVariable Long id) {
-        citiesService.deleteCities(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-    @PostMapping("classDanger")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<ClassDanger> createClassDanger(@Valid @RequestBody ClassDangerRequest request) {
-        ClassDanger entity = classDangerService.createClassDanger(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("classDanger")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<ClassDanger>> findAllClassDanger() {
-        List<ClassDanger> entities = classDangerService.findAllClassDanger();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("classDanger/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<ClassDanger> findByIdClassDanger(@PathVariable Long id) {
-        ClassDanger entity = classDangerService.findByIdClassDanger(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("classDanger/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<ClassDanger> updateClassDanger(
-            @PathVariable Long id,
-            @Valid @RequestBody ClassDangerRequest request) {
-        ClassDanger entity = classDangerService.updateClassDanger(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("classDanger/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteClassDanger(@PathVariable Long id) {
-        classDangerService.deleteClassDanger(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-    @PostMapping("cleaner-builds")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<CleanerBuilds> createCleanerBuilds(@Valid @RequestBody CleanerBuildsRequest request) {
-        CleanerBuilds entity = cleanerBuildsService.createCleanerBuilds(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("cleaner-builds")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<CleanerBuilds>> findAllCleanerBuilds() {
-        List<CleanerBuilds> entities = cleanerBuildsService.findAllCleanerBuilds();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("cleaner-builds/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<CleanerBuilds> findByIdCleanerBuilds(@PathVariable Long id) {
-        CleanerBuilds entity = cleanerBuildsService.findByIdCleanerBuilds(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("cleaner-builds/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<CleanerBuilds> updateCleanerBuilds(
-            @PathVariable Long id,
-            @Valid @RequestBody CleanerBuildsRequest request) {
-        CleanerBuilds entity = cleanerBuildsService.updateCleanerBuilds(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("cleaner-builds/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteCleanerBuilds(@PathVariable Long id) {
-        cleanerBuildsService.deleteCleanerBuilds(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-    @PostMapping("group-place-save")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<GroupPlaceSave> createGroupPlaceSave(@Valid @RequestBody GroupPlaceSaveRequest request) {
-        GroupPlaceSave entity = groupPlaceSaveService.createGroupPlaceSave(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("group-place-save")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<GroupPlaceSave>> findAllGroupPlaceSave() {
-        List<GroupPlaceSave> entities = groupPlaceSaveService.findAllGroupPlaceSave();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("group-place-save/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<GroupPlaceSave> findByIdGroupPlaceSave(@PathVariable Long id) {
-        GroupPlaceSave entity = groupPlaceSaveService.findByIdGroupPlaceSave(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("group-place-save/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<GroupPlaceSave> updateGroupPlaceSave(
-            @PathVariable Long id,
-            @Valid @RequestBody GroupPlaceSaveRequest request) {
-        GroupPlaceSave entity = groupPlaceSaveService.updateGroupPlaceSave(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("group-place-save/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteGroupPlaceSave(@PathVariable Long id) {
-        groupPlaceSaveService.deleteGroupPlaceSave(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("gruops-degree")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<GruopsDegree> createGruopsDegree(@Valid @RequestBody GruopsDegreeRequest request) {
-        GruopsDegree entity = gruopsDegreeService.createGruopsDegree(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("gruops-degree")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<GruopsDegree>> findAllGruopsDegree() {
-        List<GruopsDegree> entities = gruopsDegreeService.findAllGruopsDegree();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("gruops-degree/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<GruopsDegree> findByIdGruopsDegree(@PathVariable Long id) {
-        GruopsDegree entity = gruopsDegreeService.findByIdGruopsDegree(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("gruops-degree/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<GruopsDegree> updateGruopsDegree(
-            @PathVariable Long id,
-            @Valid @RequestBody GruopsDegreeRequest request) {
-        GruopsDegree entity = gruopsDegreeService.updateGruopsDegree(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("gruops-degree/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteGruopsDegree(@PathVariable Long id) {
-        gruopsDegreeService.deleteGruopsDegree(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping("level-trash")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<LevelTrash> createLevelTrash(@Valid @RequestBody LevelTrashRequest request) {
-        LevelTrash entity = levelTrashService.createLevelTrash(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("level-trash")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<LevelTrash>> findAllLevelTrash() {
-        List<LevelTrash> entities = levelTrashService.findAllLevelTrash();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("level-trash/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<LevelTrash> findByIdLevelTrash(@PathVariable Long id) {
-        LevelTrash entity = levelTrashService.findByIdLevelTrash(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("level-trash/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<LevelTrash> updateLevelTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody LevelTrashRequest request) {
-        LevelTrash entity = levelTrashService.updateLevelTrash(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("level-trash/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteLevelTrash(@PathVariable Long id) {
-        levelTrashService.deleteLevelTrash(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping("magazin-trash")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<MagazinTrash> createMagazinTrash(@Valid @RequestBody MagazinTrashRequest request) {
-        MagazinTrash entity = magazinTrashService.createMagazinTrash(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("magazin-trash")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<MagazinTrash>> findAllMagazinTrash() {
-        List<MagazinTrash> entities = magazinTrashService.findAllMagazinTrash();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("magazin-trash/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<MagazinTrash> findByIdMagazinTrash(@PathVariable Long id) {
-        MagazinTrash entity = magazinTrashService.findByIdMagazinTrash(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("magazin-trash/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<MagazinTrash> updateMagazinTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody MagazinTrashRequest request) {
-        MagazinTrash entity = magazinTrashService.updateMagazinTrash(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("magazin-trash/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteMagazinTrash(@PathVariable Long id) {
-        magazinTrashService.deleteMagazinTrash(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("name-group")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<NameGroup> createNameGroup(@Valid @RequestBody NameGroupRequest request) {
-        NameGroup entity = nameGroupService.createNameGroup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("name-group")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<NameGroup>> findAllNameGroup() {
-        List<NameGroup> entities = nameGroupService.findAllNameGroup();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("name-group/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<NameGroup> findByIdNameGroup(@PathVariable Long id) {
-        NameGroup entity = nameGroupService.findByIdNameGroup(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("name-group/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<NameGroup> updateNameGroup(
-            @PathVariable Long id,
-            @Valid @RequestBody NameGroupRequest request) {
-        NameGroup entity = nameGroupService.updateNameGroup(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("name-group/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteNameGroup(@PathVariable Long id) {
-        nameGroupService.deleteNameGroup(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping("natual-save-building")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<NatualSaveBuilding> createNatualSaveBuilding(@Valid @RequestBody NatualSaveBuildingRequest request) {
-        NatualSaveBuilding entity = natualSaveBuildingService.createNatualSaveBuilding(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("natual-save-building")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<NatualSaveBuilding>> findAllNatualSaveBuilding() {
-        List<NatualSaveBuilding> entities = natualSaveBuildingService.findAllNatualSaveBuilding();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("natual-save-building/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<NatualSaveBuilding> findByIdNatualSaveBuilding(@PathVariable Long id) {
-        NatualSaveBuilding entity = natualSaveBuildingService.findByIdNatualSaveBuilding(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("natual-save-building/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<NatualSaveBuilding> updateNatualSaveBuilding(
-            @PathVariable Long id,
-            @Valid @RequestBody NatualSaveBuildingRequest request) {
-        NatualSaveBuilding entity = natualSaveBuildingService.updateNatualSaveBuilding(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("natual-save-building/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteNatualSaveBuilding(@PathVariable Long id) {
-        natualSaveBuildingService.deleteNatualSaveBuilding(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("number-phone")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<NumberPhone> createNumberPhone(@Valid @RequestBody NumberPhoneRequest request) {
-        NumberPhone entity = numberPhoneService.createNumberPhone(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("number-phone")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<NumberPhone>> findAllNumberPhone() {
-        List<NumberPhone> entities = numberPhoneService.findAllNumberPhone();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("number-phone/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<NumberPhone> findByIdNumberPhone(@PathVariable Long id) {
-        NumberPhone entity = numberPhoneService.findByIdNumberPhone(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("number-phone/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<NumberPhone> updateNumberPhone(
-            @PathVariable Long id,
-            @Valid @RequestBody NumberPhoneRequest request) {
-        NumberPhone entity = numberPhoneService.updateNumberPhone(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("number-phone/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteNumberPhone(@PathVariable Long id) {
-        numberPhoneService.deleteNumberPhone(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping("physical-state")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<PhysicalState> createPhysicalState(@Valid @RequestBody PhysicalStateRequest request) {
-        PhysicalState entity = physicalStateService.createPhysicalState(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @GetMapping("physical-state")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<PhysicalState>> findAllPhysicalState() {
-        List<PhysicalState> entities = physicalStateService.findAllPhysicalState();
-        return ResponseEntity.ok(entities);
-    }
-
-    @GetMapping("physical-state/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<PhysicalState> findByIdPhysicalState(@PathVariable Long id) {
-        PhysicalState entity = physicalStateService.findByIdPhysicalState(id);
-        return ResponseEntity.ok(entity);
-    }
-
-    @PutMapping("physical-state/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<PhysicalState> updatePhysicalState(
-            @PathVariable Long id,
-            @Valid @RequestBody PhysicalStateRequest request) {
-        PhysicalState entity = physicalStateService.updatePhysicalState(id, request);
-        return ResponseEntity.ok(entity);
-    }
-
-    @DeleteMapping("physical-state/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deletePhysicalState(@PathVariable Long id) {
-        physicalStateService.deletePhysicalState(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-
-
-
-    @PostMapping("region")
-    @Operation(summary = "Создать новую запись")
+    @PostMapping("/region")
+    @Operation(summary = "Создать регион")
     public ResponseEntity<Region> createRegion(@Valid @RequestBody RegionRequest request) {
-        Region entity = regionService.createRegion(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createRegion(request));
     }
 
-    @GetMapping("region")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<Region>> findAllRegion() {
-        List<Region> entities = regionService.findAllRegion();
-        return ResponseEntity.ok(entities);
+    @GetMapping("/region")
+    @Operation(summary = "Получить все регионы")
+    public ResponseEntity<List<Region>> findAllRegions() {
+        return ResponseEntity.ok(service.findAllRegions());
     }
 
-    @GetMapping("region/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<Region> findByIdRegion(@PathVariable Long id) {
-        Region entity = regionService.findByIdRegion(id);
-        return ResponseEntity.ok(entity);
+    @GetMapping("/region/{id}")
+    @Operation(summary = "Получить регион по ID")
+    public ResponseEntity<Region> findRegionById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdRegion(id));
     }
 
-    @PutMapping("region/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<Region> updateRegion(
-            @PathVariable Long id,
-            @Valid @RequestBody RegionRequest request) {
-        Region entity = regionService.updateRegion(id, request);
-        return ResponseEntity.ok(entity);
+    @PutMapping("/region/{id}")
+    @Operation(summary = "Обновить регион")
+    public ResponseEntity<Region> updateRegion(@PathVariable Long id, @Valid @RequestBody RegionRequest request) {
+        return ResponseEntity.ok(service.updateRegion(id, request));
     }
 
-    @DeleteMapping("region/{id}")
-    @Operation(summary = "Удалить запись")
+    @DeleteMapping("/region/{id}")
+    @Operation(summary = "Удалить регион")
     public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
-        regionService.deleteRegion(id);
+        service.deleteRegion(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ==================== DISTRICT ENDPOINTS ====================
 
-
-    @PostMapping("storage-scheme")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<StorageScheme> createStorageScheme(@Valid @RequestBody StorageSchemeRequest request) {
-        StorageScheme entity = storageSchemeService.createStorageScheme(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+    @PostMapping("/district")
+    @Operation(summary = "Создать район")
+    public ResponseEntity<District> createDistrict(@Valid @RequestBody DistrictRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createDistrict(request));
     }
 
-    @GetMapping("storage-scheme")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<StorageScheme>> findAllStorageScheme() {
-        List<StorageScheme> entities = storageSchemeService.findAllStorageScheme();
-        return ResponseEntity.ok(entities);
+    @GetMapping("/district")
+    @Operation(summary = "Получить все районы")
+    public ResponseEntity<List<District>> findAllDistricts() {
+        return ResponseEntity.ok(service.findAllDistricts());
     }
 
-    @GetMapping("storage-scheme/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<StorageScheme> findByIdStorageScheme(@PathVariable Long id) {
-        StorageScheme entity = storageSchemeService.findByIdStorageScheme(id);
-        return ResponseEntity.ok(entity);
+    @GetMapping("/district/{id}")
+    @Operation(summary = "Получить район по ID")
+    public ResponseEntity<District> findDistrictById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdDistrict(id));
     }
 
-    @PutMapping("storage-scheme/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<StorageScheme> updateStorageScheme(
-            @PathVariable Long id,
-            @Valid @RequestBody StorageSchemeRequest request) {
-        StorageScheme entity = storageSchemeService.updateStorageScheme(id, request);
-        return ResponseEntity.ok(entity);
+    @PutMapping("/district/{id}")
+    @Operation(summary = "Обновить район")
+    public ResponseEntity<District> updateDistrict(@PathVariable Long id, @Valid @RequestBody DistrictRequest request) {
+        return ResponseEntity.ok(service.updateDistrict(id, request));
     }
 
-    @DeleteMapping("storage-scheme/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteStorageScheme(@PathVariable Long id) {
-        storageSchemeService.deleteStorageScheme(id);
+    @DeleteMapping("/district/{id}")
+    @Operation(summary = "Удалить район")
+    public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
+        service.deleteDistrict(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ==================== CITIES ENDPOINTS ====================
 
-
-    @PostMapping("type-trash1")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<TypeTrash1> createTypeTrash1(@Valid @RequestBody TypeTrash1Request request) {
-        TypeTrash1 entity = typeTrash1Service.createTypeTrash1(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+    @PostMapping("/cities")
+    @Operation(summary = "Создать город")
+    public ResponseEntity<Cities> createCities(@Valid @RequestBody CitiesRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createCities(request));
     }
 
-    @GetMapping("type-trash1")
-    @Operation(summary = "Получить все записи")
-    public ResponseEntity<List<TypeTrash1>> findAllTypeTrash1() {
-        List<TypeTrash1> entities = typeTrash1Service.findAllTypeTrash1();
-        return ResponseEntity.ok(entities);
+    @GetMapping("/cities")
+    @Operation(summary = "Получить все города")
+    public ResponseEntity<List<Cities>> findAllCities() {
+        return ResponseEntity.ok(service.findAllCities());
     }
 
-    @GetMapping("type-trash1/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<TypeTrash1> findByIdTypeTrash1(@PathVariable Long id) {
-        TypeTrash1 entity = typeTrash1Service.findByIdTypeTrash1(id);
-        return ResponseEntity.ok(entity);
+    @GetMapping("/cities/{id}")
+    @Operation(summary = "Получить город по ID")
+    public ResponseEntity<Cities> findCitiesById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdCities(id));
     }
 
-    @PutMapping("type-trash1/{id}")
-    @Operation(summary = "Обновить запись")
-    public ResponseEntity<TypeTrash1> updateTypeTrash1(
-            @PathVariable Long id,
-            @Valid @RequestBody TypeTrash1Request request) {
-        TypeTrash1 entity = typeTrash1Service.updateTypeTrash1(id, request);
-        return ResponseEntity.ok(entity);
+    @PutMapping("/cities/{id}")
+    @Operation(summary = "Обновить город")
+    public ResponseEntity<Cities> updateCities(@PathVariable Long id, @Valid @RequestBody CitiesRequest request) {
+        return ResponseEntity.ok(service.updateCities(id, request));
     }
 
-    @DeleteMapping("type-trash1/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteTypeTrash1(@PathVariable Long id) {
-        typeTrash1Service.deleteTypeTrash1(id);
+    @DeleteMapping("/cities/{id}")
+    @Operation(summary = "Удалить город")
+    public ResponseEntity<Void> deleteCities(@PathVariable Long id) {
+        service.deleteCities(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ==================== CLASS DANGER ENDPOINTS ====================
 
-    @PostMapping("object-place-trash")
-    @Operation(summary = "Создать новую запись")
-    public ResponseEntity<ObjectPlaceTrash> createObjectPlaceTrash(@Valid @RequestBody ObjectPlaceTrashRequest request) {
-        ObjectPlaceTrash entity = objectPlaceTrashService.createObjectPlaceTrash(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+    @PostMapping("/class-danger")
+    @Operation(summary = "Создать класс опасности")
+    public ResponseEntity<ClassDanger> createClassDanger(@Valid @RequestBody ClassDangerRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createClassDanger(request));
     }
 
-    @GetMapping("object-place-trash/with-pagination")
-    @Operation(summary = "Получить все записи с пагинацией и фильтрацией")
-    public ResponseEntity<Page<ObjectPlaceTrash>> findAllObjectPlaceTrashWithPagination(
-            @PageableDefault(size = 20, sort = "id_object_place_trash", direction = Sort.Direction.DESC) Pageable pageable,
-            ObjectPlaceTrashService.ObjectPlaceTrashFilter filter) {
-        Page<ObjectPlaceTrash> page = objectPlaceTrashService.findAllObjectPlaceTrashWithPagination(pageable, filter);
-        return ResponseEntity.ok(page);
+    @GetMapping("/class-danger")
+    @Operation(summary = "Получить все классы опасности")
+    public ResponseEntity<List<ClassDanger>> findAllClassDangers() {
+        return ResponseEntity.ok(service.findAllClassDangers());
     }
 
-    @GetMapping("object-place-trash")
-    @Operation(summary = "Получить все записи без пагинации")
-    public ResponseEntity<List<ObjectPlaceTrash>> findAllObjectPlaceTrash() {
-        List<ObjectPlaceTrash> entities = objectPlaceTrashService.findAllObjectPlaceTrash();
-        return ResponseEntity.ok(entities);
+    @GetMapping("/class-danger/{id}")
+    @Operation(summary = "Получить класс опасности по ID")
+    public ResponseEntity<ClassDanger> findClassDangerById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdClassDanger(id));
     }
 
-    @GetMapping("object-place-trash/{id}")
-    @Operation(summary = "Получить запись по ID")
-    public ResponseEntity<ObjectPlaceTrash> findByIdObjectPlaceTrash(@PathVariable Long id) {
-        ObjectPlaceTrash entity = objectPlaceTrashService.findByIdObjectPlaceTrash(id);
-        return ResponseEntity.ok(entity);
+    @PutMapping("/class-danger/{id}")
+    @Operation(summary = "Обновить класс опасности")
+    public ResponseEntity<ClassDanger> updateClassDanger(@PathVariable Long id, @Valid @RequestBody ClassDangerRequest request) {
+        return ResponseEntity.ok(service.updateClassDanger(id, request));
     }
 
-    @GetMapping("object-place-trash/{id}/around-builds")
-    @Operation(summary = "Получить привязанные природоохранные сооружения (AroundBuild)")
-    public ResponseEntity<List<AroundBuild>> findAroundBuildsByObjectPlaceTrash(@PathVariable Long id) {
-        List<AroundBuild> entities = objectPlaceTrashService.findAroundBuildsByObjectPlaceTrash(id);
-        return ResponseEntity.ok(entities);
-    }
-
-    @PostMapping("object-place-trash/{id}/around-builds")
-    @Operation(summary = "Добавить/привязать природоохранное сооружение к объекту")
-    public ResponseEntity<AroundBuild> addAroundBuildToObjectPlaceTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody ObjectAroundBuildLinkRequest request) {
-        AroundBuild entity = objectPlaceTrashService.addAroundBuildToObjectPlaceTrash(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
-    }
-
-    @DeleteMapping("object-place-trash/{id}/around-builds/{aroundBuildId}")
-    @Operation(summary = "Удалить привязку природоохранного сооружения от объекта")
-    public ResponseEntity<Void> deleteAroundBuildFromObjectPlaceTrash(
-            @PathVariable Long id,
-            @PathVariable Long aroundBuildId) {
-        objectPlaceTrashService.deleteAroundBuildFromObjectPlaceTrash(id, aroundBuildId);
+    @DeleteMapping("/class-danger/{id}")
+    @Operation(summary = "Удалить класс опасности")
+    public ResponseEntity<Void> deleteClassDanger(@PathVariable Long id) {
+        service.deleteClassDanger(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("object-place-trash/{id}/natual-save-buildings")
-    @Operation(summary = "Получить привязанные населенные пункты (NatualSaveBuilding)")
-    public ResponseEntity<List<NatualSaveBuilding>> findNatualSaveBuildsByObjectPlaceTrash(@PathVariable Long id) {
-        List<NatualSaveBuilding> entities = objectPlaceTrashService.findNatualSaveBuildsByObjectPlaceTrash(id);
-        return ResponseEntity.ok(entities);
+    // ==================== MAGAZIN TRASH ENDPOINTS ====================
+
+    @PostMapping("/magazin-trash")
+    @Operation(summary = "Создать справочник отходов")
+    public ResponseEntity<MagazinTrash> createMagazinTrash(@Valid @RequestBody MagazinTrashRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createMagazinTrash(request));
     }
 
-    @PostMapping("object-place-trash/{id}/natual-save-buildings")
-    @Operation(summary = "Добавить/привязать населенный пункт к объекту")
-    public ResponseEntity<NatualSaveBuilding> addNatualSaveBuildToObjectPlaceTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody ObjectNatualSaveBuildLinkRequest request) {
-        NatualSaveBuilding entity = objectPlaceTrashService.addNatualSaveBuildToObjectPlaceTrash(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+    @GetMapping("/magazin-trash")
+    @Operation(summary = "Получить все отходы из справочника")
+    public ResponseEntity<List<MagazinTrash>> findAllMagazinTrashes() {
+        return ResponseEntity.ok(service.findAllMagazinTrashes());
     }
 
-    @DeleteMapping("object-place-trash/{id}/natual-save-buildings/{natualSaveBuildId}")
-    @Operation(summary = "Удалить привязку населенного пункта от объекта")
-    public ResponseEntity<Void> deleteNatualSaveBuildFromObjectPlaceTrash(
-            @PathVariable Long id,
-            @PathVariable Long natualSaveBuildId) {
-        objectPlaceTrashService.deleteNatualSaveBuildFromObjectPlaceTrash(id, natualSaveBuildId);
+    @GetMapping("/magazin-trash/{id}")
+    @Operation(summary = "Получить отход по ID")
+    public ResponseEntity<MagazinTrash> findMagazinTrashById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdMagazinTrash(id));
+    }
+
+    @PutMapping("/magazin-trash/{id}")
+    @Operation(summary = "Обновить отход")
+    public ResponseEntity<MagazinTrash> updateMagazinTrash(@PathVariable Long id, @Valid @RequestBody MagazinTrashRequest request) {
+        return ResponseEntity.ok(service.updateMagazinTrash(id, request));
+    }
+
+    @DeleteMapping("/magazin-trash/{id}")
+    @Operation(summary = "Удалить отход")
+    public ResponseEntity<Void> deleteMagazinTrash(@PathVariable Long id) {
+        service.deleteMagazinTrash(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("object-place-trash/{objectId}/number-phone/{phoneId}")
-    @Operation(summary = "Отвязать телефон от объекта (номер в справочнике не удаляется)")
+    // ==================== PHYS STATE TRASH ENDPOINTS ====================
+
+    @PostMapping("/phys-state-trash")
+    @Operation(summary = "Создать физическое состояние отхода")
+    public ResponseEntity<PhysStateTrash> createPhysStateTrash(@Valid @RequestBody PhysStateTrashRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createPhysStateTrash(request));
+    }
+
+    @GetMapping("/phys-state-trash")
+    @Operation(summary = "Получить все физические состояния")
+    public ResponseEntity<List<PhysStateTrash>> findAllPhysStateTrashes() {
+        return ResponseEntity.ok(service.findAllPhysStateTrashes());
+    }
+
+    @GetMapping("/phys-state-trash/{id}")
+    @Operation(summary = "Получить физическое состояние по ID")
+    public ResponseEntity<PhysStateTrash> findPhysStateTrashById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdPhysStateTrash(id));
+    }
+
+    @PutMapping("/phys-state-trash/{id}")
+    @Operation(summary = "Обновить физическое состояние")
+    public ResponseEntity<PhysStateTrash> updatePhysStateTrash(@PathVariable Long id, @Valid @RequestBody PhysStateTrashRequest request) {
+        return ResponseEntity.ok(service.updatePhysStateTrash(id, request));
+    }
+
+    @DeleteMapping("/phys-state-trash/{id}")
+    @Operation(summary = "Удалить физическое состояние")
+    public ResponseEntity<Void> deletePhysStateTrash(@PathVariable Long id) {
+        service.deletePhysStateTrash(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== TECHNOLOGY ENDPOINTS ====================
+
+    @PostMapping("/technology")
+    @Operation(summary = "Создать технологию")
+    public ResponseEntity<Technology> createTechnology(@Valid @RequestBody TechnologyRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTechnology(request));
+    }
+
+    @GetMapping("/technology")
+    @Operation(summary = "Получить все технологии")
+    public ResponseEntity<List<Technology>> findAllTechnologies() {
+        return ResponseEntity.ok(service.findAllTechnologies());
+    }
+
+    @GetMapping("/technology/{id}")
+    @Operation(summary = "Получить технологию по ID")
+    public ResponseEntity<Technology> findTechnologyById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdTechnology(id));
+    }
+
+    @PutMapping("/technology/{id}")
+    @Operation(summary = "Обновить технологию")
+    public ResponseEntity<Technology> updateTechnology(@PathVariable Long id, @Valid @RequestBody TechnologyRequest request) {
+        return ResponseEntity.ok(service.updateTechnology(id, request));
+    }
+
+    @DeleteMapping("/technology/{id}")
+    @Operation(summary = "Удалить технологию")
+    public ResponseEntity<Void> deleteTechnology(@PathVariable Long id) {
+        service.deleteTechnology(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== MAGASIN FACTORY ENDPOINTS ====================
+
+    @PostMapping("/magasin-factory")
+    @Operation(summary = "Создать предприятие")
+    public ResponseEntity<MagasinFactory> createMagasinFactory(@Valid @RequestBody MagasinFactoryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createMagasinFactory(request));
+    }
+
+    @GetMapping("/magasin-factory")
+    @Operation(summary = "Получить все предприятия")
+    public ResponseEntity<List<MagasinFactory>> findAllMagasinFactories() {
+        return ResponseEntity.ok(service.findAllMagasinFactories());
+    }
+
+    @GetMapping("/magasin-factory/{id}")
+    @Operation(summary = "Получить предприятие по ID")
+    public ResponseEntity<MagasinFactory> findMagasinFactoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdMagasinFactory(id));
+    }
+
+    @PutMapping("/magasin-factory/{id}")
+    @Operation(summary = "Обновить предприятие")
+    public ResponseEntity<MagasinFactory> updateMagasinFactory(@PathVariable Long id, @Valid @RequestBody MagasinFactoryRequest request) {
+        return ResponseEntity.ok(service.updateMagasinFactory(id, request));
+    }
+
+    @DeleteMapping("/magasin-factory/{id}")
+    @Operation(summary = "Удалить предприятие")
+    public ResponseEntity<Void> deleteMagasinFactory(@PathVariable Long id) {
+        service.deleteMagasinFactory(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== MY TRASH ENDPOINTS ====================
+
+    @PostMapping("/my-trash")
+    @Operation(summary = "Создать отход предприятия")
+    public ResponseEntity<MyTrash> createMyTrash(@Valid @RequestBody MyTrashRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createMyTrash(request));
+    }
+
+    @GetMapping("/my-trash")
+    @Operation(summary = "Получить все отходы предприятий")
+    public ResponseEntity<List<MyTrash>> findAllMyTrashes() {
+        return ResponseEntity.ok(service.findAllMyTrashes());
+    }
+
+    @GetMapping("/my-trash/{id}")
+    @Operation(summary = "Получить отход предприятия по ID")
+    public ResponseEntity<MyTrash> findMyTrashById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdMyTrash(id));
+    }
+
+    @PutMapping("/my-trash/{id}")
+    @Operation(summary = "Обновить отход предприятия")
+    public ResponseEntity<MyTrash> updateMyTrash(@PathVariable Long id, @Valid @RequestBody MyTrashRequest request) {
+        return ResponseEntity.ok(service.updateMyTrash(id, request));
+    }
+
+    @DeleteMapping("/my-trash/{id}")
+    @Operation(summary = "Удалить отход предприятия")
+    public ResponseEntity<Void> deleteMyTrash(@PathVariable Long id) {
+        service.deleteMyTrash(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== DROP AIR ENDPOINTS ====================
+
+    @PostMapping("/drop-air")
+    @Operation(summary = "Создать выброс в атмосферу")
+    public ResponseEntity<DropAir> createDropAir(@Valid @RequestBody DropAirRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createDropAir(request));
+    }
+
+    @GetMapping("/drop-air")
+    @Operation(summary = "Получить все выбросы")
+    public ResponseEntity<List<DropAir>> findAllDropAirs() {
+        return ResponseEntity.ok(service.findAllDropAirs());
+    }
+
+    @GetMapping("/drop-air/{id}")
+    @Operation(summary = "Получить выброс по ID")
+    public ResponseEntity<DropAir> findDropAirById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdDropAir(id));
+    }
+
+    @PutMapping("/drop-air/{id}")
+    @Operation(summary = "Обновить выброс")
+    public ResponseEntity<DropAir> updateDropAir(@PathVariable Long id, @Valid @RequestBody DropAirRequest request) {
+        return ResponseEntity.ok(service.updateDropAir(id, request));
+    }
+
+    @DeleteMapping("/drop-air/{id}")
+    @Operation(summary = "Удалить выброс")
+    public ResponseEntity<Void> deleteDropAir(@PathVariable Long id) {
+        service.deleteDropAir(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== NUMBER PHONE ENDPOINTS ====================
+
+    @PostMapping("/number-phone")
+    @Operation(summary = "Создать номер телефона")
+    public ResponseEntity<NumberPhone> createNumberPhone(@Valid @RequestBody NumberPhoneRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createNumberPhone(request));
+    }
+
+    @GetMapping("/number-phone")
+    @Operation(summary = "Получить все номера телефонов")
+    public ResponseEntity<List<NumberPhone>> findAllNumberPhones() {
+        return ResponseEntity.ok(service.findAllNumberPhones());
+    }
+
+    @GetMapping("/number-phone/{id}")
+    @Operation(summary = "Получить номер телефона по ID")
+    public ResponseEntity<NumberPhone> findNumberPhoneById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdNumberPhone(id));
+    }
+
+    @PutMapping("/number-phone/{id}")
+    @Operation(summary = "Обновить номер телефона")
+    public ResponseEntity<NumberPhone> updateNumberPhone(@PathVariable Long id, @Valid @RequestBody NumberPhoneRequest request) {
+        return ResponseEntity.ok(service.updateNumberPhone(id, request));
+    }
+
+    @DeleteMapping("/number-phone/{id}")
+    @Operation(summary = "Удалить номер телефона")
+    public ResponseEntity<Void> deleteNumberPhone(@PathVariable Long id) {
+        service.deleteNumberPhone(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== NUMBER PHONE COUNT ENDPOINTS ====================
+
+    @PostMapping("/number-phone-count")
+    @Operation(summary = "Связать номер телефона с предприятием")
+    public ResponseEntity<NumberPhoneCount> createNumberPhoneCount(
+            @RequestParam Long objectPlaceId,
+            @RequestParam Long phoneId,
+            @RequestParam int urOb) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createNumberPhoneCount(objectPlaceId, phoneId, urOb));
+    }
+
+    @GetMapping("/number-phone-count")
+    @Operation(summary = "Получить все связи номеров с предприятиями")
+    public ResponseEntity<List<NumberPhoneCount>> findAllNumberPhoneCounts() {
+        return ResponseEntity.ok(service.findAllNumberPhoneCounts());
+    }
+
+    @GetMapping("/number-phone-count/object/{objectPlaceId}")
+    @Operation(summary = "Получить все номера предприятия")
+    public ResponseEntity<List<NumberPhoneCount>> findNumberPhoneCountsByObject(@PathVariable Long objectPlaceId) {
+        return ResponseEntity.ok(service.findNumberPhoneCountsByObjectPlace(objectPlaceId));
+    }
+
+    @DeleteMapping("/number-phone-count/unlink")
+    @Operation(summary = "Удалить связь номера с предприятием")
     public ResponseEntity<Void> unlinkNumberPhoneFromObject(
-            @PathVariable Long objectId,
-            @PathVariable Long phoneId) {
-        numberPhoneService.unlinkNumberPhoneFromObject(objectId, phoneId);
+            @RequestParam Long objectPlaceId,
+            @RequestParam Long phoneId) {
+        service.unlinkNumberPhoneFromObject(objectPlaceId, phoneId);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("object-place-trash/{id}")
-    @Operation(summary = "Обновить запись (только основные поля)")
-    public ResponseEntity<ObjectPlaceTrash> updateObjectPlaceTrash(
-            @PathVariable Long id,
-            @Valid @RequestBody ObjectPlaceTrashRequest request) {
-        ObjectPlaceTrash entity = objectPlaceTrashService.updateObjectPlaceTrash(id, request);
-        return ResponseEntity.ok(entity);
+    // ==================== SHORT DISCRIBE TECHNOLOGY ENDPOINTS ====================
+
+    @PostMapping("/short-discribe-technology")
+    @Operation(summary = "Создать описание технологии")
+    public ResponseEntity<ShortDiscribeTechnology> createShortDiscribeTechnology(@Valid @RequestBody ShortDiscribeTechnologyRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createShortDiscribeTechnology(request));
     }
 
-    @DeleteMapping("object-place-trash/{id}")
-    @Operation(summary = "Удалить запись")
-    public ResponseEntity<Void> deleteObjectPlaceTrash(@PathVariable Long id) {
-        objectPlaceTrashService.deleteObjectPlaceTrash(id);
+    @GetMapping("/short-discribe-technology")
+    @Operation(summary = "Получить все описания технологий")
+    public ResponseEntity<List<ShortDiscribeTechnology>> findAllShortDiscribeTechnologies() {
+        return ResponseEntity.ok(service.findAllShortDiscribeTechnologies());
+    }
+
+    @GetMapping("/short-discribe-technology/{id}")
+    @Operation(summary = "Получить описание технологии по ID")
+    public ResponseEntity<ShortDiscribeTechnology> findShortDiscribeTechnologyById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdShortDiscribeTechnology(id));
+    }
+
+    @PutMapping("/short-discribe-technology/{id}")
+    @Operation(summary = "Обновить описание технологии")
+    public ResponseEntity<ShortDiscribeTechnology> updateShortDiscribeTechnology(@PathVariable Long id, @Valid @RequestBody ShortDiscribeTechnologyRequest request) {
+        return ResponseEntity.ok(service.updateShortDiscribeTechnology(id, request));
+    }
+
+    @DeleteMapping("/short-discribe-technology/{id}")
+    @Operation(summary = "Удалить описание технологии")
+    public ResponseEntity<Void> deleteShortDiscribeTechnology(@PathVariable Long id) {
+        service.deleteShortDiscribeTechnology(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================== NAME DROP AIR TRASH ENDPOINTS ====================
+
+    @PostMapping("/name-drop-air-trash")
+    @Operation(summary = "Создать наименование выброса")
+    public ResponseEntity<NameDropAirTrash> createNameDropAirTrash(@Valid @RequestBody NameDropAirTrashRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createNameDropAirTrash(request));
+    }
+
+    @GetMapping("/name-drop-air-trash")
+    @Operation(summary = "Получить все наименования выбросов")
+    public ResponseEntity<List<NameDropAirTrash>> findAllNameDropAirTrashes() {
+        return ResponseEntity.ok(service.findAllNameDropAirTrashes());
+    }
+
+    @GetMapping("/name-drop-air-trash/{id}")
+    @Operation(summary = "Получить наименование выброса по ID")
+    public ResponseEntity<NameDropAirTrash> findNameDropAirTrashById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findByIdNameDropAirTrash(id));
+    }
+
+    @PutMapping("/name-drop-air-trash/{id}")
+    @Operation(summary = "Обновить наименование выброса")
+    public ResponseEntity<NameDropAirTrash> updateNameDropAirTrash(@PathVariable Long id, @Valid @RequestBody NameDropAirTrashRequest request) {
+        return ResponseEntity.ok(service.updateNameDropAirTrash(id, request));
+    }
+
+    @DeleteMapping("/name-drop-air-trash/{id}")
+    @Operation(summary = "Удалить наименование выброса")
+    public ResponseEntity<Void> deleteNameDropAirTrash(@PathVariable Long id) {
+        service.deleteNameDropAirTrash(id);
         return ResponseEntity.noContent().build();
     }
 }

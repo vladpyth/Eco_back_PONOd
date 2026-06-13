@@ -8,9 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,919 +16,24 @@ import java.util.stream.Collectors;
 @Transactional
 public class CRUDServices {
 
-    private final InterfAroundBuild aroundBuild;
-    private final InterfCharacteristicTrash сharacteristicTrash;
-    private final InterfObjectPlaceTrash objectPlaceTrashRepository;
-    private final InterfMagazinTrash magazinTrashRepository;
-    private final InterfPhysicalState physicalStateRepository;
-    private final InterfCities cities;
+    // ==================== РЕПОЗИТОРИИ ====================
     private final InterfRegion regionRepository;
+    private final InterfDistrict districtRepository;
+    private final InterfCities citiesRepository;
     private final InterfClassDanger classDangerRepository;
-    private final InterfCleanerBuilds cleanerBuildsRepository;
-    private final InterfGroupPlaceSave groupPlaceSaveRepository;
-    private final InterfGruopsDegree gruopsDegreeRepository;
-    private final InterfLevelTrash levelTrashRepository;
-    private final InterfTypeTrash1 typeTrash1Repository;
-    private final InterfNameGroup nameGroupRepository;
-    private final InterfNatualSaveBuilding natualSaveBuildingRepository;
+    private final InterfMagazinTrash magazinTrashRepository;
+    private final InterfNameDropAirTrash nameDropAirTrashRepository;
+    private final InterfPhysStateTrash physStateTrashRepository;
+    private final InterfShortDiscribeTechnology shortDiscribeTechnologyRepository;
+    private final InterfTechnology technologyRepository;
+    private final InterfMagasinFactory magasinFactoryRepository;
+    private final InterfMyTrash myTrashRepository;
+    private final InterfMyTrashCount myTrashCountRepository;
+    private final InterfDropAir dropAirRepository;
     private final InterfNumberPhone numberPhoneRepository;
     private final InterfNumberPhoneCount numberPhoneCountRepository;
-    private final InterfStorageScheme storageSchemeRepository;
-    private final InterfDistrict districtRepository;
 
-
-    public District createDistrict(DistrictRequest request) {
-        log.info("Creating District with name: {}", request.getName_district());
-
-        District entity = District.builder()
-                .name_district(request.getName_district())
-                .build();
-
-        return districtRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<District> findAllDistricts() {
-        log.info("Fetching all Districts");
-        return districtRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public District findByIdDistrict(Long id) {
-        log.info("Fetching District by id: {}", id);
-        return districtRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("District not found with id: " + id));
-    }
-
-    public District updateDistrict(Long id, DistrictRequest request) {
-        log.info("Updating District with id: {}", id);
-
-        District entity = districtRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("District not found with id: " + id));
-
-        entity.setName_district(request.getName_district());
-
-        return districtRepository.save(entity);
-    }
-
-    public void deleteDistrict(Long id) {
-        log.info("Deleting District with id: {}", id);
-
-        if (!districtRepository.existsById(id)) {
-            throw new RuntimeException("District not found with id: " + id);
-        }
-
-        districtRepository.deleteById(id);
-    }
-
-    public AroundBuild createAroundBuild(AroundBuildRequest request) {
-        log.info("Creating AroundBuild with name: {}", request.getName());
-
-        AroundBuild entity = AroundBuild.builder()
-                .name(request.getName())
-                .build();
-
-        return aroundBuild.save(entity);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<AroundBuild> findAllAroundBuild() {
-        log.info("Fetching all AroundBuilds");
-        return aroundBuild.findAll();
-    }
-
-
-    @Transactional(readOnly = true)
-    public AroundBuild findByIdAroundBuild(Long id) {
-        log.info("Fetching AroundBuild by id: {}", id);
-        return aroundBuild.findById(id)
-                .orElseThrow(() -> new RuntimeException("AroundBuild not found with id: " + id));
-    }
-
-
-    public AroundBuild updateAroundBuild(Long id, AroundBuildRequest request) {
-        log.info("Updating AroundBuild with id: {}", id);
-
-        AroundBuild entity = aroundBuild.findById(id)
-                .orElseThrow(() -> new RuntimeException("AroundBuild not found with id: " + id));
-
-        entity.setName(request.getName());
-
-        return aroundBuild.save(entity);
-    }
-
-    public void deleteAroundBuild(Long id) {
-        log.info("Deleting AroundBuild with id: {}", id);
-
-        if (!aroundBuild.existsById(id)) {
-            throw new RuntimeException("AroundBuild not found with id: " + id);
-        }
-
-        aroundBuild.deleteById(id);
-    }
-
-
-
-    // Создание
-    public CharacteristicTrash createCharacteristicTrash(CharacteristicTrashRequest request) {
-        log.info("Creating CharacteristicTrash");
-
-        ObjectPlaceTrash objectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found"));
-
-        MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getIdMagazinTrash())
-                .orElseThrow(() -> new RuntimeException("MagazinTrash not found"));
-
-        PhysicalState physicalState = physicalStateRepository.findById(request.getIdState())
-                .orElseThrow(() -> new RuntimeException("PhysicalState not found"));
-
-        CharacteristicTrash entity = CharacteristicTrash.builder()
-                .id_object_place_trash(objectPlaceTrash)
-                .id_magazin_trash(magazinTrash)
-                .id_state(physicalState)
-                .weight_for_year(request.getWeightForYear() != null ? request.getWeightForYear() : 0f)
-                .square_for_year(request.getSquareForYear() != null ? request.getSquareForYear() : 0f)
-                .build();
-
-        return сharacteristicTrash.save(entity);
-    }
-
-    // Получение всех
-    @Transactional(readOnly = true)
-    public List<CharacteristicTrash> findAllCharacteristicTrash() {
-        log.info("Fetching all CharacteristicTrash");
-        return сharacteristicTrash.findAll();
-    }
-
-    // Получение по ID
-    @Transactional(readOnly = true)
-    public CharacteristicTrash findByIdCharacteristicTrash(Long id) {
-        log.info("Fetching CharacteristicTrash by id: {}", id);
-        return сharacteristicTrash.findById(id)
-                .orElseThrow(() -> new RuntimeException("CharacteristicTrash not found with id: " + id));
-    }
-
-    // Обновление
-    public CharacteristicTrash updateCharacteristicTrash(Long id, CharacteristicTrashRequest request) {
-        log.info("Updating CharacteristicTrash with id: {}", id);
-
-        CharacteristicTrash entity = сharacteristicTrash.findById(id)
-                .orElseThrow(() -> new RuntimeException("CharacteristicTrash not found with id: " + id));
-
-        if (request.getIdObjectPlaceTrash() != null) {
-            ObjectPlaceTrash objectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                    .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found"));
-            entity.setId_object_place_trash(objectPlaceTrash);
-        }
-
-        if (request.getIdMagazinTrash() != null) {
-            MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getIdMagazinTrash())
-                    .orElseThrow(() -> new RuntimeException("MagazinTrash not found"));
-            entity.setId_magazin_trash(magazinTrash);
-        }
-
-        if (request.getIdState() != null) {
-            PhysicalState physicalState = physicalStateRepository.findById(request.getIdState())
-                    .orElseThrow(() -> new RuntimeException("PhysicalState not found"));
-            entity.setId_state(physicalState);
-        }
-
-        if (request.getWeightForYear() != null) {
-            entity.setWeight_for_year(request.getWeightForYear());
-        }
-
-        if (request.getSquareForYear() != null) {
-            entity.setSquare_for_year(request.getSquareForYear());
-        }
-
-        return сharacteristicTrash.save(entity);
-    }
-
-    // Удаление
-    public void deleteCharacteristicTrash(Long id) {
-        log.info("Deleting CharacteristicTrash with id: {}", id);
-
-        if (!сharacteristicTrash.existsById(id)) {
-            throw new RuntimeException("CharacteristicTrash not found with id: " + id);
-        }
-
-        сharacteristicTrash.deleteById(id);
-    }
-
-
-    public Cities createCities(CitiesRequest request) {
-        log.info("Creating Cities with index: {}", request.getIndex());
-
-        Region region = regionRepository.findById(request.getIdRegion())
-                .orElseThrow(() -> new RuntimeException("Region not found with id: " + request.getIdRegion()));
-
-        District district = districtRepository.findById(request.getIdDistrict())
-                .orElseThrow(() -> new RuntimeException("district not found with id: " + request.getIdDistrict()));
-        Cities entity = Cities.builder()
-                .id_region(region)
-                .index(request.getIndex())
-                .id_district(district)
-                .name_cities(request.getName_cities())
-                .build();
-
-        return cities.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Cities> findAllCities() {
-        log.info("Fetching all Cities");
-        return cities.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Cities findByIdCities(Long id) {
-        log.info("Fetching Cities by id: {}", id);
-        return cities.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cities not found with id: " + id));
-    }
-
-    public Cities updateCities(Long id, CitiesRequest request) {
-        log.info("Updating Cities with id: {}", id);
-
-        Cities entity = cities.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cities not found with id: " + id));
-
-        // Обновление имени города
-        if (request.getName_cities() != null) {
-            entity.setName_cities(request.getName_cities());
-        }
-
-        // Обновление индекса
-        if (request.getIndex() != null) {
-            entity.setIndex(request.getIndex());
-        }
-
-        // Обновление региона
-        if (request.getIdRegion() != null) {
-            Region region = regionRepository.findById(request.getIdRegion())
-                    .orElseThrow(() -> new RuntimeException("Region not found with id: " + request.getIdRegion()));
-            entity.setId_region(region);
-        }
-
-        // Обновление района
-        if (request.getIdDistrict() != null) {
-            District district = districtRepository.findById(request.getIdDistrict())
-                    .orElseThrow(() -> new RuntimeException("District not found with id: " + request.getIdDistrict()));
-            entity.setId_district(district);
-        }
-
-        return cities.save(entity);
-    }
-
-    public void deleteCities(Long id) {
-        log.info("Deleting Cities with id: {}", id);
-
-        if (!cities.existsById(id)) {
-            throw new RuntimeException("Cities not found with id: " + id);
-        }
-
-        cities.deleteById(id);
-    }
-
-
-
-
-    public ClassDanger createClassDanger(ClassDangerRequest request) {
-        log.info("Creating ClassDanger with class: {}", request.getClassDanger());
-
-        ClassDanger entity = ClassDanger.builder()
-                .class_danger(request.getClassDanger())
-                .build();
-
-        return classDangerRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ClassDanger> findAllClassDanger() {
-        log.info("Fetching all ClassDanger");
-        return classDangerRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public ClassDanger findByIdClassDanger(Long id) {
-        log.info("Fetching ClassDanger by id: {}", id);
-        return classDangerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + id));
-    }
-
-    public ClassDanger updateClassDanger(Long id, ClassDangerRequest request) {
-        log.info("Updating ClassDanger with id: {}", id);
-
-        ClassDanger entity = classDangerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + id));
-
-        if (request.getClassDanger() != null) {
-            entity.setClass_danger(request.getClassDanger());
-        }
-
-        return classDangerRepository.save(entity);
-    }
-
-    public void deleteClassDanger(Long id) {
-        log.info("Deleting ClassDanger with id: {}", id);
-
-        if (!classDangerRepository.existsById(id)) {
-            throw new RuntimeException("ClassDanger not found with id: " + id);
-        }
-
-        classDangerRepository.deleteById(id);
-    }
-
-
-
-
-    public CleanerBuilds createCleanerBuilds(CleanerBuildsRequest request) {
-        log.info("Creating CleanerBuilds with registrNumber: {}", request.getRegistrNumber());
-
-        ObjectPlaceTrash objectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found with id: " + request.getIdObjectPlaceTrash()));
-
-        CleanerBuilds entity = CleanerBuilds.builder()
-                .registr_number(request.getRegistrNumber())
-                .id_object_place_trash(objectPlaceTrash)
-                .name_object(request.getNameObject())
-                .start_use(request.getStartUse() != null ? request.getStartUse() : 0)
-                .all_square(request.getAllSquare() != null ? request.getAllSquare() : 0f)
-                .trash_count(request.getTrashCount() != null ? request.getTrashCount() : 0f)
-                .build();
-
-        return cleanerBuildsRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CleanerBuilds> findAllCleanerBuilds() {
-        log.info("Fetching all CleanerBuilds");
-        return cleanerBuildsRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public CleanerBuilds findByIdCleanerBuilds(Long id) {
-        log.info("Fetching CleanerBuilds by id: {}", id);
-        return cleanerBuildsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CleanerBuilds not found with id: " + id));
-    }
-
-    public CleanerBuilds updateCleanerBuilds(Long id, CleanerBuildsRequest request) {
-        log.info("Updating CleanerBuilds with id: {}", id);
-
-        CleanerBuilds entity = cleanerBuildsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CleanerBuilds not found with id: " + id));
-
-        if (request.getRegistrNumber() != null) {
-            entity.setRegistr_number(request.getRegistrNumber());
-        }
-
-        if (request.getIdObjectPlaceTrash() != null) {
-            ObjectPlaceTrash objectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                    .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found with id: " + request.getIdObjectPlaceTrash()));
-            entity.setId_object_place_trash(objectPlaceTrash);
-        }
-
-        if (request.getNameObject() != null) {
-            entity.setName_object(request.getNameObject());
-        }
-
-        if (request.getStartUse() != null) {
-            entity.setStart_use(request.getStartUse());
-        }
-
-        if (request.getAllSquare() != null) {
-            entity.setAll_square(request.getAllSquare());
-        }
-
-        if (request.getTrashCount() != null) {
-            entity.setTrash_count(request.getTrashCount());
-        }
-
-        return cleanerBuildsRepository.save(entity);
-    }
-
-    public void deleteCleanerBuilds(Long id) {
-        log.info("Deleting CleanerBuilds with id: {}", id);
-
-        if (!cleanerBuildsRepository.existsById(id)) {
-            throw new RuntimeException("CleanerBuilds not found with id: " + id);
-        }
-
-        cleanerBuildsRepository.deleteById(id);
-    }
-
-
-
-    public GroupPlaceSave createGroupPlaceSave(GroupPlaceSaveRequest request) {
-        log.info("Creating GroupPlaceSave with name: {}", request.getNameGroup());
-
-        GroupPlaceSave entity = GroupPlaceSave.builder()
-                .name_group(request.getNameGroup())
-                .build();
-
-        return groupPlaceSaveRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<GroupPlaceSave> findAllGroupPlaceSave() {
-        log.info("Fetching all GroupPlaceSave");
-        return groupPlaceSaveRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public GroupPlaceSave findByIdGroupPlaceSave(Long id) {
-        log.info("Fetching GroupPlaceSave by id: {}", id);
-        return groupPlaceSaveRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GroupPlaceSave not found with id: " + id));
-    }
-
-    public GroupPlaceSave updateGroupPlaceSave(Long id, GroupPlaceSaveRequest request) {
-        log.info("Updating GroupPlaceSave with id: {}", id);
-
-        GroupPlaceSave entity = groupPlaceSaveRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GroupPlaceSave not found with id: " + id));
-
-        if (request.getNameGroup() != null) {
-            entity.setName_group(request.getNameGroup());
-        }
-
-        return groupPlaceSaveRepository.save(entity);
-    }
-
-    public void deleteGroupPlaceSave(Long id) {
-        log.info("Deleting GroupPlaceSave with id: {}", id);
-
-        if (!groupPlaceSaveRepository.existsById(id)) {
-            throw new RuntimeException("GroupPlaceSave not found with id: " + id);
-        }
-
-        groupPlaceSaveRepository.deleteById(id);
-    }
-
-
-
-    public GruopsDegree createGruopsDegree(GruopsDegreeRequest request) {
-        log.info("Creating GruopsDegree with number: {}", request.getNamberGruop());
-
-        GruopsDegree entity = GruopsDegree.builder()
-                .namber_gruop(request.getNamberGruop())
-                .build();
-
-        return gruopsDegreeRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<GruopsDegree> findAllGruopsDegree() {
-        log.info("Fetching all GruopsDegree");
-        return gruopsDegreeRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public GruopsDegree findByIdGruopsDegree(Long id) {
-        log.info("Fetching GruopsDegree by id: {}", id);
-        return gruopsDegreeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GruopsDegree not found with id: " + id));
-    }
-
-    public GruopsDegree updateGruopsDegree(Long id, GruopsDegreeRequest request) {
-        log.info("Updating GruopsDegree with id: {}", id);
-
-        GruopsDegree entity = gruopsDegreeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GruopsDegree not found with id: " + id));
-
-        if (request.getNamberGruop() != null) {
-            entity.setNamber_gruop(request.getNamberGruop());
-        }
-
-        return gruopsDegreeRepository.save(entity);
-    }
-
-    public void deleteGruopsDegree(Long id) {
-        log.info("Deleting GruopsDegree with id: {}", id);
-
-        if (!gruopsDegreeRepository.existsById(id)) {
-            throw new RuntimeException("GruopsDegree not found with id: " + id);
-        }
-
-        gruopsDegreeRepository.deleteById(id);
-    }
-
-
-    public LevelTrash createLevelTrash(LevelTrashRequest request) {
-        log.info("Creating LevelTrash with name: {}", request.getNameLevelTrash());
-
-        LevelTrash entity = LevelTrash.builder()
-                .name_level_trash(request.getNameLevelTrash())
-                .build();
-
-        return levelTrashRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<LevelTrash> findAllLevelTrash() {
-        log.info("Fetching all LevelTrash");
-        return levelTrashRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public LevelTrash findByIdLevelTrash(Long id) {
-        log.info("Fetching LevelTrash by id: {}", id);
-        return levelTrashRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("LevelTrash not found with id: " + id));
-    }
-
-    public LevelTrash updateLevelTrash(Long id, LevelTrashRequest request) {
-        log.info("Updating LevelTrash with id: {}", id);
-
-        LevelTrash entity = levelTrashRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("LevelTrash not found with id: " + id));
-
-        if (request.getNameLevelTrash() != null) {
-            entity.setName_level_trash(request.getNameLevelTrash());
-        }
-
-        return levelTrashRepository.save(entity);
-    }
-
-    public void deleteLevelTrash(Long id) {
-        log.info("Deleting LevelTrash with id: {}", id);
-
-        if (!levelTrashRepository.existsById(id)) {
-            throw new RuntimeException("LevelTrash not found with id: " + id);
-        }
-
-        levelTrashRepository.deleteById(id);
-    }
-
-
-    public MagazinTrash createMagazinTrash(MagazinTrashRequest request) {
-        log.info("Creating MagazinTrash with code: {}", request.getCodeTrash());
-
-        ClassDanger classDanger = null;
-        if (request.getIdClassDanger() != null && request.getIdClassDanger() > 0) {
-            classDanger = classDangerRepository.findById(request.getIdClassDanger())
-                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getIdClassDanger()));
-        }
-
-        TypeTrash1 typeTrash = typeTrash1Repository.findById(request.getIdTypeTrash())
-                .orElseThrow(() -> new RuntimeException("TypeTrash1 not found with id: " + request.getIdTypeTrash()));
-
-        LevelTrash levelTrash = levelTrashRepository.findById(request.getIdLevelTrash())
-                .orElseThrow(() -> new RuntimeException("LevelTrash not found with id: " + request.getIdLevelTrash()));
-
-        NameGroup nameGroup = nameGroupRepository.findById(request.getIdMameGroup())
-                .orElseThrow(() -> new RuntimeException("NameGroup not found with id: " + request.getIdMameGroup()));
-
-        MagazinTrash entity = MagazinTrash.builder()
-                .id_class_danger(classDanger)
-                .id_type_trash(typeTrash)
-                .id_level_trash(levelTrash)
-                .id_mame_group(nameGroup)
-                .code_trash(request.getCodeTrash())
-                .name_trash(request.getNameTrash())
-                .block1(request.getBlock1())
-                .group2(request.getGroup2())
-                .group3(request.getGroup3())
-                .build();
-
-        return magazinTrashRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<MagazinTrash> findAllMagazinTrash() {
-        log.info("Fetching all MagazinTrash");
-        return magazinTrashRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public MagazinTrash findByIdMagazinTrash(Long id) {
-        log.info("Fetching MagazinTrash by id: {}", id);
-        return magazinTrashRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + id));
-    }
-
-    public MagazinTrash updateMagazinTrash(Long id, MagazinTrashRequest request) {
-        log.info("Updating MagazinTrash with id: {}", id);
-
-        MagazinTrash entity = magazinTrashRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + id));
-
-        if (request.getIdClassDanger() != null && request.getIdClassDanger() > 0) {
-            ClassDanger classDanger = classDangerRepository.findById(request.getIdClassDanger())
-                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getIdClassDanger()));
-            entity.setId_class_danger(classDanger);
-        } else {
-            entity.setId_class_danger(null);
-        }
-
-        if (request.getIdTypeTrash() != null) {
-            TypeTrash1 typeTrash = typeTrash1Repository.findById(request.getIdTypeTrash())
-                    .orElseThrow(() -> new RuntimeException("TypeTrash1 not found with id: " + request.getIdTypeTrash()));
-            entity.setId_type_trash(typeTrash);
-        }
-
-        if (request.getIdLevelTrash() != null) {
-            LevelTrash levelTrash = levelTrashRepository.findById(request.getIdLevelTrash())
-                    .orElseThrow(() -> new RuntimeException("LevelTrash not found with id: " + request.getIdLevelTrash()));
-            entity.setId_level_trash(levelTrash);
-        }
-
-        if (request.getIdMameGroup() != null) {
-            NameGroup nameGroup = nameGroupRepository.findById(request.getIdMameGroup())
-                    .orElseThrow(() -> new RuntimeException("NameGroup not found with id: " + request.getIdMameGroup()));
-            entity.setId_mame_group(nameGroup);
-        }
-
-        if (request.getCodeTrash() != null) {
-            entity.setCode_trash(request.getCodeTrash());
-        }
-
-        if (request.getNameTrash() != null) {
-            entity.setName_trash(request.getNameTrash());
-        }
-
-        if (request.getBlock1() != null) {
-            entity.setBlock1(request.getBlock1());
-        }
-
-        if (request.getGroup2() != null) {
-            entity.setGroup2(request.getGroup2());
-        }
-
-        if (request.getGroup3() != null) {
-            entity.setGroup3(request.getGroup3());
-        }
-
-
-
-        return magazinTrashRepository.save(entity);
-    }
-
-    public void deleteMagazinTrash(Long id) {
-        log.info("Deleting MagazinTrash with id: {}", id);
-
-        if (!magazinTrashRepository.existsById(id)) {
-            throw new RuntimeException("MagazinTrash not found with id: " + id);
-        }
-
-        magazinTrashRepository.deleteById(id);
-    }
-
-
-
-
-    public NameGroup createNameGroup(NameGroupRequest request) {
-        log.info("Creating NameGroup with name: {}", request.getNameGroup());
-
-        NameGroup entity = NameGroup.builder()
-                .name_group(request.getNameGroup())
-                .build();
-
-        return nameGroupRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<NameGroup> findAllNameGroup() {
-        log.info("Fetching all NameGroup");
-        return nameGroupRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public NameGroup findByIdNameGroup(Long id) {
-        log.info("Fetching NameGroup by id: {}", id);
-        return nameGroupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NameGroup not found with id: " + id));
-    }
-
-    public NameGroup updateNameGroup(Long id, NameGroupRequest request) {
-        log.info("Updating NameGroup with id: {}", id);
-
-        NameGroup entity = nameGroupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NameGroup not found with id: " + id));
-
-        if (request.getNameGroup() != null) {
-            entity.setName_group(request.getNameGroup());
-        }
-
-        return nameGroupRepository.save(entity);
-    }
-
-    public void deleteNameGroup(Long id) {
-        log.info("Deleting NameGroup with id: {}", id);
-
-        if (!nameGroupRepository.existsById(id)) {
-            throw new RuntimeException("NameGroup not found with id: " + id);
-        }
-
-        nameGroupRepository.deleteById(id);
-    }
-
-    public NatualSaveBuilding createNatualSaveBuilding(NatualSaveBuildingRequest request) {
-        log.info("Creating NatualSaveBuilding with name: {}", request.getName());
-
-        NatualSaveBuilding entity = NatualSaveBuilding.builder()
-                .name(request.getName())
-                .build();
-
-        return natualSaveBuildingRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<NatualSaveBuilding> findAllNatualSaveBuilding() {
-        log.info("Fetching all NatualSaveBuilding");
-        return natualSaveBuildingRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public NatualSaveBuilding findByIdNatualSaveBuilding(Long id) {
-        log.info("Fetching NatualSaveBuilding by id: {}", id);
-        return natualSaveBuildingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NatualSaveBuilding not found with id: " + id));
-    }
-
-    public NatualSaveBuilding updateNatualSaveBuilding(Long id, NatualSaveBuildingRequest request) {
-        log.info("Updating NatualSaveBuilding with id: {}", id);
-
-        NatualSaveBuilding entity = natualSaveBuildingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NatualSaveBuilding not found with id: " + id));
-
-        if (request.getName() != null) {
-            entity.setName(request.getName());
-        }
-
-        return natualSaveBuildingRepository.save(entity);
-    }
-
-    public void deleteNatualSaveBuilding(Long id) {
-        log.info("Deleting NatualSaveBuilding with id: {}", id);
-
-        if (!natualSaveBuildingRepository.existsById(id)) {
-            throw new RuntimeException("NatualSaveBuilding not found with id: " + id);
-        }
-
-        natualSaveBuildingRepository.deleteById(id);
-    }
-
-
-
-    public NumberPhone createNumberPhone(NumberPhoneRequest request) {
-        log.info("Creating NumberPhone with number: {}", request.getNumber());
-
-        if (request.getIdObjectPlaceTrash() == null) {
-            throw new RuntimeException("idObjectPlaceTrash is required when creating a phone");
-        }
-
-        ObjectPlaceTrash objectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found with id: " + request.getIdObjectPlaceTrash()));
-
-        NumberPhone phone = numberPhoneRepository.findByNumber(request.getNumber())
-                .orElseGet(() -> NumberPhone.builder()
-                        .number(request.getNumber())
-                        .build());
-        NumberPhone savedPhone = numberPhoneRepository.save(phone);
-
-        Long oid = objectPlaceTrash.getId_object_place_trash();
-        Long pid = savedPhone.getId_phone_number();
-        numberPhoneCountRepository.findLink(oid, pid).ifPresentOrElse(
-                link -> {
-                    link.setUr_ob(request.getUr_ob());
-                    numberPhoneCountRepository.save(link);
-                },
-                () -> numberPhoneCountRepository.save(NumberPhoneCount.builder()
-                        .id_object_place_trash(objectPlaceTrash)
-                        .id_phone_number(savedPhone)
-                        .ur_ob(request.getUr_ob())
-                        .build())
-        );
-
-        log.info("Created NumberPhone with id: {}", savedPhone.getId_phone_number());
-        return savedPhone;
-    }
-
-    // ==================== READ (все) ====================
-    @Transactional(readOnly = true)
-    public List<NumberPhone> findAllNumberPhone() {
-        log.info("Fetching all NumberPhone");
-        return numberPhoneRepository.findAll();
-    }
-
-    // ==================== READ by ID ====================
-    @Transactional(readOnly = true)
-    public NumberPhone findByIdNumberPhone(Long id) {
-        log.info("Fetching NumberPhone by id: {}", id);
-        return numberPhoneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + id));
-    }
-
-    // ==================== UPDATE ====================
-    public NumberPhone updateNumberPhone(Long id, NumberPhoneRequest request) {
-        log.info("Updating NumberPhone with id: {}", id);
-
-        NumberPhone entity = numberPhoneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + id));
-
-        if (request.getIdObjectPlaceTrash() != null) {
-            ObjectPlaceTrash newObjectPlaceTrash = objectPlaceTrashRepository.findById(request.getIdObjectPlaceTrash())
-                    .orElseThrow(() -> new RuntimeException("ObjectPlaceTrash not found with id: " + request.getIdObjectPlaceTrash()));
-            Long oid = newObjectPlaceTrash.getId_object_place_trash();
-            Long phoneId = entity.getId_phone_number();
-            numberPhoneCountRepository.findLink(oid, phoneId).ifPresentOrElse(
-                    link -> {
-                        link.setUr_ob(request.getUr_ob());
-                        numberPhoneCountRepository.save(link);
-                    },
-                    () -> numberPhoneCountRepository.save(NumberPhoneCount.builder()
-                            .id_object_place_trash(newObjectPlaceTrash)
-                            .id_phone_number(entity)
-                            .ur_ob(request.getUr_ob())
-                            .build())
-            );
-        }
-
-        if (request.getNumber() != null) {
-            entity.setNumber(request.getNumber());
-        }
-
-        return numberPhoneRepository.save(entity);
-    }
-
-    // ==================== DELETE ====================
-    public void deleteNumberPhone(Long id) {
-        log.info("Deleting NumberPhone with id: {}", id);
-
-        numberPhoneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + id));
-        numberPhoneCountRepository.deleteAllByPhoneId(id);
-        numberPhoneRepository.deleteById(id);
-        log.info("Deleted NumberPhone with id: {}", id);
-    }
-
-    /** Удаляет только связь объекта с номером; запись {@link NumberPhone} остаётся в справочнике. */
-    public void unlinkNumberPhoneFromObject(Long objectPlaceId, Long phoneId) {
-        log.info("Unlinking phone {} from object {}", phoneId, objectPlaceId);
-        numberPhoneCountRepository.deleteLink(objectPlaceId, phoneId);
-    }
-    /*
-    // ==================== Дополнительные методы ====================
-
-    // Поиск номеров по объекту
-    @Transactional(readOnly = true)
-    public List<NumberPhone> findNumberPhonesByObjectPlaceTrashId(Long objectId) {
-        log.info("Fetching NumberPhones for ObjectPlaceTrash with id: {}", objectId);
-        return numberPhoneRepository.findByObjectPlaceTrash_Id_object_place_trash(objectId);
-    }
-    */
-
-
-    public PhysicalState createPhysicalState(PhysicalStateRequest request) {
-        log.info("Creating PhysicalState with state: {}", request.getState());
-
-        PhysicalState entity = PhysicalState.builder()
-                .state(request.getState())
-                .build();
-
-        return physicalStateRepository.save(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PhysicalState> findAllPhysicalState() {
-        log.info("Fetching all PhysicalState");
-        return physicalStateRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public PhysicalState findByIdPhysicalState(Long id) {
-        log.info("Fetching PhysicalState by id: {}", id);
-        return physicalStateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PhysicalState not found with id: " + id));
-    }
-
-    public PhysicalState updatePhysicalState(Long id, PhysicalStateRequest request) {
-        log.info("Updating PhysicalState with id: {}", id);
-
-        PhysicalState entity = physicalStateRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PhysicalState not found with id: " + id));
-
-        if (request.getState() != null) {
-            entity.setState(request.getState());
-        }
-
-        return physicalStateRepository.save(entity);
-    }
-
-    public void deletePhysicalState(Long id) {
-        log.info("Deleting PhysicalState with id: {}", id);
-
-        if (!physicalStateRepository.existsById(id)) {
-            throw new RuntimeException("PhysicalState not found with id: " + id);
-        }
-
-        physicalStateRepository.deleteById(id);
-    }
-
-
+    // ==================== REGION CRUD ====================
 
     public Region createRegion(RegionRequest request) {
         log.info("Creating Region with name: {}", request.getNameRegion());
@@ -943,8 +46,8 @@ public class CRUDServices {
     }
 
     @Transactional(readOnly = true)
-    public List<Region> findAllRegion() {
-        log.info("Fetching all Region");
+    public List<Region> findAllRegions() {
+        log.info("Fetching all Regions");
         return regionRepository.findAll();
     }
 
@@ -978,100 +81,980 @@ public class CRUDServices {
         regionRepository.deleteById(id);
     }
 
+    // ==================== DISTRICT CRUD ====================
 
+    public District createDistrict(DistrictRequest request) {
+        log.info("Creating District with name: {}", request.getName_district());
 
-    public StorageScheme createStorageScheme(StorageSchemeRequest request) {
-        log.info("Creating StorageScheme with name: {}", request.getNameStorageScheme());
-
-        StorageScheme entity = StorageScheme.builder()
-                .name_storage_scheme(request.getNameStorageScheme())
+        District entity = District.builder()
+                .name_district(request.getName_district())
                 .build();
 
-        return storageSchemeRepository.save(entity);
+        return districtRepository.save(entity);
     }
 
     @Transactional(readOnly = true)
-    public List<StorageScheme> findAllStorageScheme() {
-        log.info("Fetching all StorageScheme");
-        return storageSchemeRepository.findAll();
+    public List<District> findAllDistricts() {
+        log.info("Fetching all Districts");
+        return districtRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public StorageScheme findByIdStorageScheme(Long id) {
-        log.info("Fetching StorageScheme by id: {}", id);
-        return storageSchemeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("StorageScheme not found with id: " + id));
+    public District findByIdDistrict(Long id) {
+        log.info("Fetching District by id: {}", id);
+        return districtRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("District not found with id: " + id));
     }
 
-    public StorageScheme updateStorageScheme(Long id, StorageSchemeRequest request) {
-        log.info("Updating StorageScheme with id: {}", id);
+    public District updateDistrict(Long id, DistrictRequest request) {
+        log.info("Updating District with id: {}", id);
 
-        StorageScheme entity = storageSchemeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("StorageScheme not found with id: " + id));
+        District entity = districtRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("District not found with id: " + id));
 
-        if (request.getNameStorageScheme() != null) {
-            entity.setName_storage_scheme(request.getNameStorageScheme());
+        if (request.getName_district() != null) {
+            entity.setName_district(request.getName_district());
         }
 
-        return storageSchemeRepository.save(entity);
+        return districtRepository.save(entity);
     }
 
-    public void deleteStorageScheme(Long id) {
-        log.info("Deleting StorageScheme with id: {}", id);
+    public void deleteDistrict(Long id) {
+        log.info("Deleting District with id: {}", id);
 
-        if (!storageSchemeRepository.existsById(id)) {
-            throw new RuntimeException("StorageScheme not found with id: " + id);
+        if (!districtRepository.existsById(id)) {
+            throw new RuntimeException("District not found with id: " + id);
         }
 
-        storageSchemeRepository.deleteById(id);
+        districtRepository.deleteById(id);
     }
 
+    // ==================== CITIES CRUD ====================
 
+    public Cities createCities(CitiesRequest request) {
+        log.info("Creating Cities with index: {}", request.getIndex());
 
-    public TypeTrash1 createTypeTrash1(TypeTrash1Request request) {
-        log.info("Creating TypeTrash1 with name: {}", request.getNameTypeTrash1());
+        Region region = regionRepository.findById(request.getIdRegion())
+                .orElseThrow(() -> new RuntimeException("Region not found with id: " + request.getIdRegion()));
 
-        TypeTrash1 entity = TypeTrash1.builder()
-                .name_type_trash1(request.getNameTypeTrash1())
+        District district = districtRepository.findById(request.getIdDistrict())
+                .orElseThrow(() -> new RuntimeException("District not found with id: " + request.getIdDistrict()));
+
+        Cities entity = Cities.builder()
+                .id_region(region)
+                .index(request.getIndex())
+                .id_district(district)
+                .name_cities(request.getName_cities())
                 .build();
 
-        return typeTrash1Repository.save(entity);
+        return citiesRepository.save(entity);
     }
 
     @Transactional(readOnly = true)
-    public List<TypeTrash1> findAllTypeTrash1() {
-        log.info("Fetching all TypeTrash1");
-        return typeTrash1Repository.findAll();
+    public List<Cities> findAllCities() {
+        log.info("Fetching all Cities");
+        return citiesRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public TypeTrash1 findByIdTypeTrash1(Long id) {
-        log.info("Fetching TypeTrash1 by id: {}", id);
-        return typeTrash1Repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("TypeTrash1 not found with id: " + id));
+    public Cities findByIdCities(Long id) {
+        log.info("Fetching Cities by id: {}", id);
+        return citiesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cities not found with id: " + id));
     }
 
-    public TypeTrash1 updateTypeTrash1(Long id, TypeTrash1Request request) {
-        log.info("Updating TypeTrash1 with id: {}", id);
+    public Cities updateCities(Long id, CitiesRequest request) {
+        log.info("Updating Cities with id: {}", id);
 
-        TypeTrash1 entity = typeTrash1Repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("TypeTrash1 not found with id: " + id));
+        Cities entity = citiesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cities not found with id: " + id));
 
-        if (request.getNameTypeTrash1() != null) {
-            entity.setName_type_trash1(request.getNameTypeTrash1());
+        if (request.getName_cities() != null) {
+            entity.setName_cities(request.getName_cities());
         }
 
-        return typeTrash1Repository.save(entity);
-    }
-
-    public void deleteTypeTrash1(Long id) {
-        log.info("Deleting TypeTrash1 with id: {}", id);
-
-        if (!typeTrash1Repository.existsById(id)) {
-            throw new RuntimeException("TypeTrash1 not found with id: " + id);
+        if (request.getIndex() != null) {
+            entity.setIndex(request.getIndex());
         }
 
-        typeTrash1Repository.deleteById(id);
+        if (request.getIdRegion() != null) {
+            Region region = regionRepository.findById(request.getIdRegion())
+                    .orElseThrow(() -> new RuntimeException("Region not found with id: " + request.getIdRegion()));
+            entity.setId_region(region);
+        }
+
+        if (request.getIdDistrict() != null) {
+            District district = districtRepository.findById(request.getIdDistrict())
+                    .orElseThrow(() -> new RuntimeException("District not found with id: " + request.getIdDistrict()));
+            entity.setId_district(district);
+        }
+
+        return citiesRepository.save(entity);
     }
 
+    public void deleteCities(Long id) {
+        log.info("Deleting Cities with id: {}", id);
+
+        if (!citiesRepository.existsById(id)) {
+            throw new RuntimeException("Cities not found with id: " + id);
+        }
+
+        citiesRepository.deleteById(id);
+    }
+
+    // ==================== CLASS DANGER CRUD ====================
+
+    public ClassDanger createClassDanger(ClassDangerRequest request) {
+        log.info("Creating ClassDanger with class: {}", request.getClassDanger());
+
+        ClassDanger entity = ClassDanger.builder()
+                .class_danger(request.getClassDanger())
+                .build();
+
+        return classDangerRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClassDanger> findAllClassDangers() {
+        log.info("Fetching all ClassDangers");
+        return classDangerRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public ClassDanger findByIdClassDanger(Long id) {
+        log.info("Fetching ClassDanger by id: {}", id);
+        return classDangerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + id));
+    }
+
+    public ClassDanger updateClassDanger(Long id, ClassDangerRequest request) {
+        log.info("Updating ClassDanger with id: {}", id);
+
+        ClassDanger entity = classDangerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + id));
+
+        if (request.getClassDanger() != null) {
+            entity.setClass_danger(request.getClassDanger());
+        }
+
+        return classDangerRepository.save(entity);
+    }
+
+    public void deleteClassDanger(Long id) {
+        log.info("Deleting ClassDanger with id: {}", id);
+
+        if (!classDangerRepository.existsById(id)) {
+            throw new RuntimeException("ClassDanger not found with id: " + id);
+        }
+
+        classDangerRepository.deleteById(id);
+    }
+
+    // ==================== MAGAZIN TRASH CRUD ====================
+
+    public MagazinTrash createMagazinTrash(MagazinTrashRequest request) {
+        log.info("Creating MagazinTrash with code: {}", request.getCode_trash());
+
+        ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+
+        MagazinTrash entity = MagazinTrash.builder()
+                .id_class_danger(classDanger)
+                .code_trash(request.getCode_trash())
+                .name_trash(request.getName_trash())
+                .build();
+
+        return magazinTrashRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MagazinTrash> findAllMagazinTrashes() {
+        log.info("Fetching all MagazinTrashes");
+        return magazinTrashRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public MagazinTrash findByIdMagazinTrash(Long id) {
+        log.info("Fetching MagazinTrash by id: {}", id);
+        return magazinTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + id));
+    }
+
+    public MagazinTrash updateMagazinTrash(Long id, MagazinTrashRequest request) {
+        log.info("Updating MagazinTrash with id: {}", id);
+
+        MagazinTrash entity = magazinTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + id));
+
+        if (request.getId_class_danger() != null) {
+            ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+            entity.setId_class_danger(classDanger);
+        }
+
+        if (request.getCode_trash() != null) {
+            entity.setCode_trash(request.getCode_trash());
+        }
+
+        if (request.getName_trash() != null) {
+            entity.setName_trash(request.getName_trash());
+        }
+
+        return magazinTrashRepository.save(entity);
+    }
+
+    public void deleteMagazinTrash(Long id) {
+        log.info("Deleting MagazinTrash with id: {}", id);
+
+        if (!magazinTrashRepository.existsById(id)) {
+            throw new RuntimeException("MagazinTrash not found with id: " + id);
+        }
+
+        magazinTrashRepository.deleteById(id);
+    }
+
+    // ==================== NAME DROP AIR TRASH CRUD ====================
+
+    public NameDropAirTrash createNameDropAirTrash(NameDropAirTrashRequest request) {
+        log.info("Creating NameDropAirTrash with name: {}", request.getName_drop_air_trash());
+
+        NameDropAirTrash entity = NameDropAirTrash.builder()
+                .name_drop_air_trash(request.getName_drop_air_trash())
+                .build();
+
+        return nameDropAirTrashRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NameDropAirTrash> findAllNameDropAirTrashes() {
+        log.info("Fetching all NameDropAirTrashes");
+        return nameDropAirTrashRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public NameDropAirTrash findByIdNameDropAirTrash(Long id) {
+        log.info("Fetching NameDropAirTrash by id: {}", id);
+        return nameDropAirTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NameDropAirTrash not found with id: " + id));
+    }
+
+    public NameDropAirTrash updateNameDropAirTrash(Long id, NameDropAirTrashRequest request) {
+        log.info("Updating NameDropAirTrash with id: {}", id);
+
+        NameDropAirTrash entity = nameDropAirTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NameDropAirTrash not found with id: " + id));
+
+        if (request.getName_drop_air_trash() != null) {
+            entity.setName_drop_air_trash(request.getName_drop_air_trash());
+        }
+
+        return nameDropAirTrashRepository.save(entity);
+    }
+
+    public void deleteNameDropAirTrash(Long id) {
+        log.info("Deleting NameDropAirTrash with id: {}", id);
+
+        if (!nameDropAirTrashRepository.existsById(id)) {
+            throw new RuntimeException("NameDropAirTrash not found with id: " + id);
+        }
+
+        nameDropAirTrashRepository.deleteById(id);
+    }
+
+    // ==================== PHYS STATE TRASH CRUD ====================
+
+    public PhysStateTrash createPhysStateTrash(PhysStateTrashRequest request) {
+        log.info("Creating PhysStateTrash with name: {}", request.getName_group());
+
+        PhysStateTrash entity = PhysStateTrash.builder()
+                .name_group(request.getName_group())
+                .build();
+
+        return physStateTrashRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PhysStateTrash> findAllPhysStateTrashes() {
+        log.info("Fetching all PhysStateTrashes");
+        return physStateTrashRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public PhysStateTrash findByIdPhysStateTrash(Long id) {
+        log.info("Fetching PhysStateTrash by id: {}", id);
+        return physStateTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PhysStateTrash not found with id: " + id));
+    }
+
+    public PhysStateTrash updatePhysStateTrash(Long id, PhysStateTrashRequest request) {
+        log.info("Updating PhysStateTrash with id: {}", id);
+
+        PhysStateTrash entity = physStateTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PhysStateTrash not found with id: " + id));
+
+        if (request.getName_group() != null) {
+            entity.setName_group(request.getName_group());
+        }
+
+        return physStateTrashRepository.save(entity);
+    }
+
+    public void deletePhysStateTrash(Long id) {
+        log.info("Deleting PhysStateTrash with id: {}", id);
+
+        if (!physStateTrashRepository.existsById(id)) {
+            throw new RuntimeException("PhysStateTrash not found with id: " + id);
+        }
+
+        physStateTrashRepository.deleteById(id);
+    }
+
+    // ==================== SHORT DISCRIBE TECHNOLOGY CRUD ====================
+
+    public ShortDiscribeTechnology createShortDiscribeTechnology(ShortDiscribeTechnologyRequest request) {
+        log.info("Creating ShortDiscribeTechnology with technology: {}", request.getTechnology());
+
+        ShortDiscribeTechnology entity = ShortDiscribeTechnology.builder()
+                .technology(request.getTechnology())
+                .build();
+
+        return shortDiscribeTechnologyRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShortDiscribeTechnology> findAllShortDiscribeTechnologies() {
+        log.info("Fetching all ShortDiscribeTechnologies");
+        return shortDiscribeTechnologyRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public ShortDiscribeTechnology findByIdShortDiscribeTechnology(Long id) {
+        log.info("Fetching ShortDiscribeTechnology by id: {}", id);
+        return shortDiscribeTechnologyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ShortDiscribeTechnology not found with id: " + id));
+    }
+
+    public ShortDiscribeTechnology updateShortDiscribeTechnology(Long id, ShortDiscribeTechnologyRequest request) {
+        log.info("Updating ShortDiscribeTechnology with id: {}", id);
+
+        ShortDiscribeTechnology entity = shortDiscribeTechnologyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ShortDiscribeTechnology not found with id: " + id));
+
+        if (request.getTechnology() != null) {
+            entity.setTechnology(request.getTechnology());
+        }
+
+        return shortDiscribeTechnologyRepository.save(entity);
+    }
+
+    public void deleteShortDiscribeTechnology(Long id) {
+        log.info("Deleting ShortDiscribeTechnology with id: {}", id);
+
+        if (!shortDiscribeTechnologyRepository.existsById(id)) {
+            throw new RuntimeException("ShortDiscribeTechnology not found with id: " + id);
+        }
+
+        shortDiscribeTechnologyRepository.deleteById(id);
+    }
+
+    // ==================== TECHNOLOGY CRUD ====================
+
+    public Technology createTechnology(TechnologyRequest request) {
+        log.info("Creating Technology");
+
+        ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+
+        MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getId_magazin_trash())
+                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + request.getId_magazin_trash()));
+
+        PhysStateTrash physStateTrash = physStateTrashRepository.findById(request.getId_phys_trash())
+                .orElseThrow(() -> new RuntimeException("PhysStateTrash not found with id: " + request.getId_phys_trash()));
+
+        Technology entity = Technology.builder()
+                .id_class_danger(classDanger)
+                .id_magazin_trash(magazinTrash)
+                .id_phys_trash(physStateTrash)
+                .build();
+
+        return technologyRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Technology> findAllTechnologies() {
+        log.info("Fetching all Technologies");
+        return technologyRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Technology findByIdTechnology(Long id) {
+        log.info("Fetching Technology by id: {}", id);
+        return technologyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Technology not found with id: " + id));
+    }
+
+    public Technology updateTechnology(Long id, TechnologyRequest request) {
+        log.info("Updating Technology with id: {}", id);
+
+        Technology entity = technologyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Technology not found with id: " + id));
+
+        if (request.getId_class_danger() != null) {
+            ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+            entity.setId_class_danger(classDanger);
+        }
+
+        if (request.getId_magazin_trash() != null) {
+            MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getId_magazin_trash())
+                    .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + request.getId_magazin_trash()));
+            entity.setId_magazin_trash(magazinTrash);
+        }
+
+        if (request.getId_phys_trash() != null) {
+            PhysStateTrash physStateTrash = physStateTrashRepository.findById(request.getId_phys_trash())
+                    .orElseThrow(() -> new RuntimeException("PhysStateTrash not found with id: " + request.getId_phys_trash()));
+            entity.setId_phys_trash(physStateTrash);
+        }
+
+        return technologyRepository.save(entity);
+    }
+
+    public void deleteTechnology(Long id) {
+        log.info("Deleting Technology with id: {}", id);
+
+        if (!technologyRepository.existsById(id)) {
+            throw new RuntimeException("Technology not found with id: " + id);
+        }
+
+        technologyRepository.deleteById(id);
+    }
+
+    // ==================== MAGASIN FACTORY CRUD ====================
+
+    public MagasinFactory createMagasinFactory(MagasinFactoryRequest request) {
+        log.info("Creating MagasinFactory with registration: {}", request.getId_registration());
+
+        Cities city = null;
+        if (request.getId_cities() != null) {
+            city = citiesRepository.findById(request.getId_cities())
+                    .orElseThrow(() -> new RuntimeException("Cities not found with id: " + request.getId_cities()));
+        }
+
+        ShortDiscribeTechnology shortDiscribeTechnology = null;
+        if (request.getId_short_discribe_technology() != null) {
+            shortDiscribeTechnology = shortDiscribeTechnologyRepository.findById(request.getId_short_discribe_technology())
+                    .orElseThrow(() -> new RuntimeException("ShortDiscribeTechnology not found with id: " + request.getId_short_discribe_technology()));
+        }
+
+        Technology technology = null;
+        if (request.getId_technology() != null) {
+            technology = technologyRepository.findById(request.getId_technology())
+                    .orElseThrow(() -> new RuntimeException("Technology not found with id: " + request.getId_technology()));
+        }
+
+        MagasinFactory entity = MagasinFactory.builder()
+                .id_registration(request.getId_registration())
+                .date_register(request.getDate_register())
+                .id_cities(city)
+                .id_short_discribe_technology(shortDiscribeTechnology)
+                .id_technology(technology)
+                .name_obj(request.getName_obj())
+                .name_own(request.getName_own())
+                .address_own(request.getAddress_own())
+                .address_obj(request.getAddress_obj())
+                .develop_organization(request.getDevelop_organization())
+                .confirmed_project(request.getConfirmed_project())
+                .date_approve(request.getDate_approve())
+                .conclusion_documentation(request.getConclusion_documentation())
+                .act_use(request.getAct_use())
+                .requirements_acts(request.getRequirements_acts())
+                .obj_use_trash(request.getObj_use_trash())
+                .obj_accept_trash(request.getObj_accept_trash())
+                .character_prod(request.getCharacter_prod())
+                .project_power_yer(request.getProject_power_yer())
+                .project_power_hr(request.getProject_power_hr())
+                .facticheskay_power(request.getFacticheskay_power())
+                .YNP(request.getYNP())
+                .value(request.getValue() != null ? request.getValue() : 0)
+                .build();
+
+        return magasinFactoryRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MagasinFactory> findAllMagasinFactories() {
+        log.info("Fetching all MagasinFactories");
+        return magasinFactoryRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public MagasinFactory findByIdMagasinFactory(Long id) {
+        log.info("Fetching MagasinFactory by id: {}", id);
+        return magasinFactoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + id));
+    }
+
+    public MagasinFactory updateMagasinFactory(Long id, MagasinFactoryRequest request) {
+        log.info("Updating MagasinFactory with id: {}", id);
+
+        MagasinFactory entity = magasinFactoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + id));
+
+        if (request.getId_registration() != null) {
+            entity.setId_registration(request.getId_registration());
+        }
+
+        if (request.getDate_register() != null) {
+            entity.setDate_register(request.getDate_register());
+        }
+
+        if (request.getId_cities() != null) {
+            Cities city = citiesRepository.findById(request.getId_cities())
+                    .orElseThrow(() -> new RuntimeException("Cities not found with id: " + request.getId_cities()));
+            entity.setId_cities(city);
+        }
+
+        if (request.getId_short_discribe_technology() != null) {
+            ShortDiscribeTechnology shortDiscribeTechnology = shortDiscribeTechnologyRepository.findById(request.getId_short_discribe_technology())
+                    .orElseThrow(() -> new RuntimeException("ShortDiscribeTechnology not found with id: " + request.getId_short_discribe_technology()));
+            entity.setId_short_discribe_technology(shortDiscribeTechnology);
+        }
+
+        if (request.getId_technology() != null) {
+            Technology technology = technologyRepository.findById(request.getId_technology())
+                    .orElseThrow(() -> new RuntimeException("Technology not found with id: " + request.getId_technology()));
+            entity.setId_technology(technology);
+        }
+
+        if (request.getName_obj() != null) {
+            entity.setName_obj(request.getName_obj());
+        }
+
+        if (request.getName_own() != null) {
+            entity.setName_own(request.getName_own());
+        }
+
+        if (request.getAddress_own() != null) {
+            entity.setAddress_own(request.getAddress_own());
+        }
+
+        if (request.getAddress_obj() != null) {
+            entity.setAddress_obj(request.getAddress_obj());
+        }
+
+        if (request.getDevelop_organization() != null) {
+            entity.setDevelop_organization(request.getDevelop_organization());
+        }
+
+        if (request.getConfirmed_project() != null) {
+            entity.setConfirmed_project(request.getConfirmed_project());
+        }
+
+        if (request.getDate_approve() != null) {
+            entity.setDate_approve(request.getDate_approve());
+        }
+
+        if (request.getConclusion_documentation() != null) {
+            entity.setConclusion_documentation(request.getConclusion_documentation());
+        }
+
+        if (request.getAct_use() != null) {
+            entity.setAct_use(request.getAct_use());
+        }
+
+        if (request.getRequirements_acts() != null) {
+            entity.setRequirements_acts(request.getRequirements_acts());
+        }
+
+        if (request.getObj_use_trash() != null) {
+            entity.setObj_use_trash(request.getObj_use_trash());
+        }
+
+        if (request.getObj_accept_trash() != null) {
+            entity.setObj_accept_trash(request.getObj_accept_trash());
+        }
+
+        if (request.getCharacter_prod() != null) {
+            entity.setCharacter_prod(request.getCharacter_prod());
+        }
+
+        if (request.getProject_power_yer() != null) {
+            entity.setProject_power_yer(request.getProject_power_yer());
+        }
+
+        if (request.getProject_power_hr() != null) {
+            entity.setProject_power_hr(request.getProject_power_hr());
+        }
+
+        if (request.getFacticheskay_power() != null) {
+            entity.setFacticheskay_power(request.getFacticheskay_power());
+        }
+
+        if (request.getYNP() != null) {
+            entity.setYNP(request.getYNP());
+        }
+
+        if (request.getValue() != null) {
+            entity.setValue(request.getValue());
+        }
+
+        return magasinFactoryRepository.save(entity);
+    }
+
+    public void deleteMagasinFactory(Long id) {
+        log.info("Deleting MagasinFactory with id: {}", id);
+
+        if (!magasinFactoryRepository.existsById(id)) {
+            throw new RuntimeException("MagasinFactory not found with id: " + id);
+        }
+
+        magasinFactoryRepository.deleteById(id);
+    }
+
+    // ==================== MY TRASH CRUD ====================
+
+    public MyTrash createMyTrash(MyTrashRequest request) {
+        log.info("Creating MyTrash");
+
+        ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+
+        MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getId_magazin_trash())
+                .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + request.getId_magazin_trash()));
+
+        MagasinFactory magasinFactory = magasinFactoryRepository.findById(request.getId_magasin_factory())
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + request.getId_magasin_factory()));
+
+        MyTrash entity = MyTrash.builder()
+                .id_class_danger(classDanger)
+                .id_magazin_trash(magazinTrash)
+
+                .value_trash(request.getValue_trash())
+                .build();
+
+        return myTrashRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyTrash> findAllMyTrashes() {
+        log.info("Fetching all MyTrashes");
+        return myTrashRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public MyTrash findByIdMyTrash(Long id) {
+        log.info("Fetching MyTrash by id: {}", id);
+        return myTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MyTrash not found with id: " + id));
+    }
+
+    public MyTrash updateMyTrash(Long id, MyTrashRequest request) {
+        log.info("Updating MyTrash with id: {}", id);
+
+        MyTrash entity = myTrashRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MyTrash not found with id: " + id));
+
+        if (request.getId_class_danger() != null) {
+            ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+            entity.setId_class_danger(classDanger);
+        }
+
+        if (request.getId_magazin_trash() != null) {
+            MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getId_magazin_trash())
+                    .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + request.getId_magazin_trash()));
+            entity.setId_magazin_trash(magazinTrash);
+        }
+
+
+
+        if (request.getValue_trash() != null) {
+            entity.setValue_trash(request.getValue_trash());
+        }
+
+        return myTrashRepository.save(entity);
+    }
+
+    public void deleteMyTrash(Long id) {
+        log.info("Deleting MyTrash with id: {}", id);
+
+        if (!myTrashRepository.existsById(id)) {
+            throw new RuntimeException("MyTrash not found with id: " + id);
+        }
+
+        myTrashRepository.deleteById(id);
+    }
+
+    // ==================== DROP AIR CRUD ====================
+
+    public DropAir createDropAir(DropAirRequest request) {
+        log.info("Creating DropAir");
+
+        ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+
+        NameDropAirTrash nameDropAirTrash = nameDropAirTrashRepository.findById(request.getId_name_grope_air())
+                .orElseThrow(() -> new RuntimeException("NameDropAirTrash not found with id: " + request.getId_name_grope_air()));
+
+        MagasinFactory magasinFactory = magasinFactoryRepository.findById(request.getId_magasin_factory())
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + request.getId_magasin_factory()));
+
+        DropAir entity = DropAir.builder()
+                .id_class_danger(classDanger)
+                .id_name_grope_air(nameDropAirTrash)
+                .id_magasin_factory(magasinFactory)
+                .value_drop_trash(request.getValue_drop_trash())
+                .build();
+
+        return dropAirRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DropAir> findAllDropAirs() {
+        log.info("Fetching all DropAirs");
+        return dropAirRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public DropAir findByIdDropAir(Long id) {
+        log.info("Fetching DropAir by id: {}", id);
+        return dropAirRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("DropAir not found with id: " + id));
+    }
+
+    public DropAir updateDropAir(Long id, DropAirRequest request) {
+        log.info("Updating DropAir with id: {}", id);
+
+        DropAir entity = dropAirRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("DropAir not found with id: " + id));
+
+        if (request.getId_class_danger() != null) {
+            ClassDanger classDanger = classDangerRepository.findById(request.getId_class_danger())
+                    .orElseThrow(() -> new RuntimeException("ClassDanger not found with id: " + request.getId_class_danger()));
+            entity.setId_class_danger(classDanger);
+        }
+
+        if (request.getId_name_grope_air() != null) {
+            NameDropAirTrash nameDropAirTrash = nameDropAirTrashRepository.findById(request.getId_name_grope_air())
+                    .orElseThrow(() -> new RuntimeException("NameDropAirTrash not found with id: " + request.getId_name_grope_air()));
+            entity.setId_name_grope_air(nameDropAirTrash);
+        }
+
+        if (request.getId_magasin_factory() != null) {
+            MagasinFactory magasinFactory = magasinFactoryRepository.findById(request.getId_magasin_factory())
+                    .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + request.getId_magasin_factory()));
+            entity.setId_magasin_factory(magasinFactory);
+        }
+
+        if (request.getValue_drop_trash() != null) {
+            entity.setValue_drop_trash(request.getValue_drop_trash());
+        }
+
+        return dropAirRepository.save(entity);
+    }
+
+    public void deleteDropAir(Long id) {
+        log.info("Deleting DropAir with id: {}", id);
+
+        if (!dropAirRepository.existsById(id)) {
+            throw new RuntimeException("DropAir not found with id: " + id);
+        }
+
+        dropAirRepository.deleteById(id);
+    }
+
+    // ==================== NUMBER PHONE CRUD ====================
+
+    public NumberPhone createNumberPhone(NumberPhoneRequest request) {
+        log.info("Creating NumberPhone with number: {}", request.getNumber());
+
+        // Если указан idObjectPlaceTrash, создаем связь
+        if (request.getIdObjectPlaceTrash() != null) {
+            NumberPhone phone = numberPhoneRepository.findByNumber(request.getNumber())
+                    .orElseGet(() -> {
+                        NumberPhone newPhone = NumberPhone.builder()
+                                .number(request.getNumber())
+                                .build();
+                        return numberPhoneRepository.save(newPhone);
+                    });
+
+            MagasinFactory magasinFactory = magasinFactoryRepository.findById(request.getIdObjectPlaceTrash())
+                    .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + request.getIdObjectPlaceTrash()));
+
+            // Проверяем, существует ли уже связь
+            if (!numberPhoneCountRepository.existsLink(request.getIdObjectPlaceTrash(), phone.getId_phone_number())) {
+                NumberPhoneCount link = NumberPhoneCount.builder()
+                        .id_phone_number(phone)
+                        .id_object_place_trash(magasinFactory)
+                        .ur_ob(request.getUr_ob())
+                        .build();
+                numberPhoneCountRepository.save(link);
+            }
+
+            return phone;
+        }
+
+        // Иначе просто создаем номер
+        NumberPhone entity = NumberPhone.builder()
+                .number(request.getNumber())
+                .build();
+
+        return numberPhoneRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NumberPhone> findAllNumberPhones() {
+        log.info("Fetching all NumberPhones");
+        return numberPhoneRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public NumberPhone findByIdNumberPhone(Long id) {
+        log.info("Fetching NumberPhone by id: {}", id);
+        return numberPhoneRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + id));
+    }
+
+    public NumberPhone updateNumberPhone(Long id, NumberPhoneRequest request) {
+        log.info("Updating NumberPhone with id: {}", id);
+
+        NumberPhone entity = numberPhoneRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + id));
+
+        if (request.getNumber() != null) {
+            entity.setNumber(request.getNumber());
+        }
+
+        return numberPhoneRepository.save(entity);
+    }
+
+    public void deleteNumberPhone(Long id) {
+        log.info("Deleting NumberPhone with id: {}", id);
+
+        if (!numberPhoneRepository.existsById(id)) {
+            throw new RuntimeException("NumberPhone not found with id: " + id);
+        }
+
+        // Сначала удаляем все связи
+        numberPhoneCountRepository.deleteAllByPhoneId(id);
+        numberPhoneRepository.deleteById(id);
+    }
+
+    // ==================== NUMBER PHONE COUNT CRUD ====================
+
+    public NumberPhoneCount createNumberPhoneCount(Long objectPlaceId, Long phoneId, int urOb) {
+        log.info("Creating NumberPhoneCount link between object {} and phone {}", objectPlaceId, phoneId);
+
+        NumberPhone numberPhone = numberPhoneRepository.findById(phoneId)
+                .orElseThrow(() -> new RuntimeException("NumberPhone not found with id: " + phoneId));
+
+        MagasinFactory magasinFactory = magasinFactoryRepository.findById(objectPlaceId)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + objectPlaceId));
+
+        // Проверяем, существует ли уже такая связь
+        if (numberPhoneCountRepository.existsLink(objectPlaceId, phoneId)) {
+            throw new RuntimeException("Link already exists between phone and object");
+        }
+
+        NumberPhoneCount entity = NumberPhoneCount.builder()
+                .id_phone_number(numberPhone)
+                .id_object_place_trash(magasinFactory)
+                .ur_ob(urOb)
+                .build();
+
+        return numberPhoneCountRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NumberPhoneCount> findAllNumberPhoneCounts() {
+        log.info("Fetching all NumberPhoneCounts");
+        return numberPhoneCountRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public NumberPhoneCount findByIdNumberPhoneCount(Long id) {
+        log.info("Fetching NumberPhoneCount by id: {}", id);
+        return numberPhoneCountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NumberPhoneCount not found with id: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<NumberPhoneCount> findNumberPhoneCountsByObjectPlace(Long objectPlaceId) {
+        log.info("Fetching NumberPhoneCounts for object: {}", objectPlaceId);
+        return numberPhoneCountRepository.findAllByObjectPlaceId(objectPlaceId);
+    }
+
+    public NumberPhoneCount updateNumberPhoneCount(Long id, int urOb) {
+        log.info("Updating NumberPhoneCount with id: {}", id);
+
+        NumberPhoneCount entity = numberPhoneCountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NumberPhoneCount not found with id: " + id));
+
+        entity.setUr_ob(urOb);
+
+        return numberPhoneCountRepository.save(entity);
+    }
+
+    public void deleteNumberPhoneCount(Long id) {
+        log.info("Deleting NumberPhoneCount with id: {}", id);
+
+        if (!numberPhoneCountRepository.existsById(id)) {
+            throw new RuntimeException("NumberPhoneCount not found with id: " + id);
+        }
+
+        numberPhoneCountRepository.deleteById(id);
+    }
+
+    public void unlinkNumberPhoneFromObject(Long objectPlaceId, Long phoneId) {
+        log.info("Unlinking phone {} from object {}", phoneId, objectPlaceId);
+
+        if (!numberPhoneCountRepository.existsLink(objectPlaceId, phoneId)) {
+            throw new RuntimeException("Link not found between phone " + phoneId + " and object " + objectPlaceId);
+        }
+
+        numberPhoneCountRepository.deleteLink(objectPlaceId, phoneId);
+    }
+
+    // ==================== MY TRASH COUNT CRUD (если используется) ====================
+
+    public MyTrashCount createMyTrashCount(Long myTrashId, Long objectPlaceId) {
+        log.info("Creating MyTrashCount link");
+
+        MyTrash myTrash = myTrashRepository.findById(myTrashId)
+                .orElseThrow(() -> new RuntimeException("MyTrash not found with id: " + myTrashId));
+
+        MagasinFactory magasinFactory = magasinFactoryRepository.findById(objectPlaceId)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + objectPlaceId));
+
+        MyTrashCount entity = MyTrashCount.builder()
+                .id_my_trash(myTrash)
+                .id_object_place_trash(magasinFactory)
+                .build();
+
+        return myTrashCountRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyTrashCount> findAllMyTrashCounts() {
+        log.info("Fetching all MyTrashCounts");
+        return myTrashCountRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public MyTrashCount findByIdMyTrashCount(Long id) {
+        log.info("Fetching MyTrashCount by id: {}", id);
+        return myTrashCountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MyTrashCount not found with id: " + id));
+    }
+
+    public void deleteMyTrashCount(Long id) {
+        log.info("Deleting MyTrashCount with id: {}", id);
+
+        if (!myTrashCountRepository.existsById(id)) {
+            throw new RuntimeException("MyTrashCount not found with id: " + id);
+        }
+
+        myTrashCountRepository.deleteById(id);
+    }
 }

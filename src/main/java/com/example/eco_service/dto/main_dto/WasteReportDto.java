@@ -14,10 +14,10 @@ public class WasteReportDto {
     // Из таблицы Region
     private String regionName;
 
-    // Из таблицы NameGroup
+    // Из таблицы PhysStateTrash
     private String nameGroup;
 
-    // Из таблицы ObjectPlaceTrash
+    // Из таблицы MagasinFactory
     private String objectName;
     private String objectLocation;
     private String ownerName;

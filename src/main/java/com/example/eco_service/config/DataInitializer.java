@@ -1,52 +1,38 @@
 package com.example.eco_service.config;
 
-import com.example.eco_service.entities.TestUser;
-import com.example.eco_service.repositories.TestUserRep;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import com.example.eco_service.entities.*;
 import com.example.eco_service.repositories.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-    private final TestUserRep userRepository;
+
+    // Репозитории для новых сущностей (все с префиксом Interf)
     private final InterfRegion regionRepository;
+    private final InterfDistrict districtRepository;
     private final InterfCities citiesRepository;
     private final InterfClassDanger classDangerRepository;
-    private final InterfTypeTrash1 typeTrash1Repository;
-    private final InterfLevelTrash levelTrashRepository;
-    private final InterfNameGroup nameGroupRepository;
-    private final InterfPhysicalState physicalStateRepository;
-    private final InterfStorageScheme storageSchemeRepository;
-    private final InterfGroupPlaceSave groupPlaceSaveRepository;
-    private final InterfGruopsDegree gruopsDegreeRepository;
-    private final InterfAroundBuild aroundBuildRepository;
-    private final InterfNatualSaveBuilding natualSaveBuildingRepository;
     private final InterfMagazinTrash magazinTrashRepository;
-    private final InterfObjectPlaceTrash objectPlaceTrashRepository;
-    private final InterfAroundBuildCount aroundBuildCountRepository;
-    private final InterfNatualSaveBuildCount natualSaveBuildCountRepository;
+    private final InterfNameDropAirTrash nameDropAirTrashRepository;
+    private final InterfPhysStateTrash physStateTrashRepository;
+    private final InterfShortDiscribeTechnology shortDiscribeTechnologyRepository;
+    private final InterfTechnology technologyRepository;
+    private final InterfMagasinFactory magasinFactoryRepository;
+    private final InterfMyTrash myTrashRepository;
+    private final InterfMyTrashCount myTrashCountRepository;
+    private final InterfDropAir dropAirRepository;
     private final InterfNumberPhone numberPhoneRepository;
     private final InterfNumberPhoneCount numberPhoneCountRepository;
-    private final InterfCleanerBuilds cleanerBuildsRepository;
-    private final InterfCharacteristicTrash characteristicTrashRepository;
-    private final InterfDistrict districtRepository;
-
 
     @Override
     @Transactional
@@ -54,48 +40,98 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Checking if database needs initialization...");
 
         // Проверяем, пустая ли БД (по основной таблице)
-        if (objectPlaceTrashRepository.count() > 0) {
+        if (magasinFactoryRepository.count() > 0) {
             log.info("Database already contains data. Skipping initialization.");
             return;
         }
 
-        log.info("Initializing test data...");
+        log.info("Initializing test data for new entity structure...");
 
-        // ==================== 1. СПРАВОЧНИКИ (без внешних зависимостей) ====================
+        // ==================== 1. ГЕОГРАФИЯ ====================
 
         // 1.1 Регионы
         List<Region> regions = Arrays.asList(
-                Region.builder().name_region("Киевская область").build(),
-                Region.builder().name_region("Львовская область").build(),
-                Region.builder().name_region("Одесская область").build(),
-                Region.builder().name_region("Днепропетровская область").build(),
-                Region.builder().name_region("Харьковская область").build()
+                Region.builder().name_region("Минская область").build(),
+                Region.builder().name_region("Брестская область").build(),
+                Region.builder().name_region("Гродненская область").build(),
+                Region.builder().name_region("Гомельская область").build(),
+                Region.builder().name_region("Витебская область").build(),
+                Region.builder().name_region("Могилёвская область").build()
         );
         regions = regionRepository.saveAll(regions);
         log.info("Created {} regions", regions.size());
 
+        // 1.2 Районы
         List<District> districts = Arrays.asList(
-                District.builder().name_district("Брестский").build(),
-                District.builder().name_district("Каменецкий").build(),
-                District.builder().name_district("Кобринский").build(),
-                District.builder().name_district("Лунинецкий").build(),
-                District.builder().name_district("Малоритский").build()
+                District.builder().name_district("Минский район").build(),
+                District.builder().name_district("Брестский район").build(),
+                District.builder().name_district("Гродненский район").build(),
+                District.builder().name_district("Гомельский район").build(),
+                District.builder().name_district("Витебский район").build(),
+                District.builder().name_district("Могилёвский район").build(),
+                District.builder().name_district("Фрунзенский район").build(),
+                District.builder().name_district("Ленинский район").build()
         );
         districts = districtRepository.saveAll(districts);
-        log.info("Created {} regions", districts.size());
-        // 1.2 Города
+        log.info("Created {} districts", districts.size());
+
+        // 1.3 Города
         List<Cities> cities = Arrays.asList(
-                Cities.builder().id_region(regions.get(0)).index("01001").id_district(districts.get(0)).name_cities("Киев").build(),
-                Cities.builder().id_region(regions.get(0)).index("08132").id_district(districts.get(1)).name_cities("Вишня").build(),
-                Cities.builder().id_region(regions.get(1)).index("79000").id_district(districts.get(2)).name_cities("Львов").build(),
-                Cities.builder().id_region(regions.get(2)).index("65000").id_district(districts.get(1)).name_cities("Одесса").build(),
-                Cities.builder().id_region(regions.get(3)).index("49000").id_district(districts.get(3)).name_cities("Днепр").build(),
-                Cities.builder().id_region(regions.get(4)).index("61000").id_district(districts.get(4)).name_cities("Харьков").build()
+                Cities.builder()
+                        .id_region(regions.get(0))
+                        .index("220000")
+                        .id_district(districts.get(0))
+                        .name_cities("Минск")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(1))
+                        .index("224000")
+                        .id_district(districts.get(1))
+                        .name_cities("Брест")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(2))
+                        .index("230000")
+                        .id_district(districts.get(2))
+                        .name_cities("Гродно")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(3))
+                        .index("246000")
+                        .id_district(districts.get(3))
+                        .name_cities("Гомель")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(4))
+                        .index("210000")
+                        .id_district(districts.get(4))
+                        .name_cities("Витебск")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(5))
+                        .index("212000")
+                        .id_district(districts.get(5))
+                        .name_cities("Могилёв")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(0))
+                        .index("222000")
+                        .id_district(districts.get(6))
+                        .name_cities("Заславль")
+                        .build(),
+                Cities.builder()
+                        .id_region(regions.get(0))
+                        .index("223000")
+                        .id_district(districts.get(7))
+                        .name_cities("Смолевичи")
+                        .build()
         );
         cities = citiesRepository.saveAll(cities);
         log.info("Created {} cities", cities.size());
 
-        // 1.3 Классы опасности
+        // ==================== 2. СПРАВОЧНИКИ ====================
+
+        // 2.1 Классы опасности
         List<ClassDanger> classDangers = Arrays.asList(
                 ClassDanger.builder().class_danger(1).build(),
                 ClassDanger.builder().class_danger(2).build(),
@@ -106,448 +142,584 @@ public class DataInitializer implements CommandLineRunner {
         classDangers = classDangerRepository.saveAll(classDangers);
         log.info("Created {} danger classes", classDangers.size());
 
-        // 1.4 Типы отходов (уровень 1)
-        List<TypeTrash1> typeTrash1s = Arrays.asList(
-                TypeTrash1.builder().name_type_trash1("Промышленные отходы").build(),
-                TypeTrash1.builder().name_type_trash1("Бытовые отходы").build(),
-                TypeTrash1.builder().name_type_trash1("Опасные отходы").build(),
-                TypeTrash1.builder().name_type_trash1("Строительные отходы").build()
-        );
-        typeTrash1s = typeTrash1Repository.saveAll(typeTrash1s);
-        log.info("Created {} trash types", typeTrash1s.size());
-
-        // 1.5 Уровни отходов
-        List<LevelTrash> levelTrashes = Arrays.asList(
-                LevelTrash.builder().name_level_trash("I уровень опасности").build(),
-                LevelTrash.builder().name_level_trash("II уровень опасности").build(),
-                LevelTrash.builder().name_level_trash("III уровень опасности").build(),
-                LevelTrash.builder().name_level_trash("IV уровень опасности").build(),
-                LevelTrash.builder().name_level_trash("V уровень опасности").build()
-        );
-        levelTrashes = levelTrashRepository.saveAll(levelTrashes);
-        log.info("Created {} trash levels", levelTrashes.size());
-
-        // 1.6 Группы названий
-        List<NameGroup> nameGroups = Arrays.asList(
-                NameGroup.builder().name_group("Органические").build(),
-                NameGroup.builder().name_group("Неорганические").build(),
-                NameGroup.builder().name_group("Пластмассы").build(),
-                NameGroup.builder().name_group("Металлы").build(),
-                NameGroup.builder().name_group("Стекло").build()
-        );
-        nameGroups = nameGroupRepository.saveAll(nameGroups);
-        log.info("Created {} name groups", nameGroups.size());
-
-        // 1.7 Физические состояния
-        List<PhysicalState> physicalStates = Arrays.asList(
-                PhysicalState.builder().state("твердое").build(),
-                PhysicalState.builder().state("жидкое").build(),
-                PhysicalState.builder().state("пастообразное").build(),
-                PhysicalState.builder().state("сыпучее").build()
-        );
-        physicalStates = physicalStateRepository.saveAll(physicalStates);
-        log.info("Created {} physical states", physicalStates.size());
-
-        // 1.8 Схемы хранения
-        List<StorageScheme> storageSchemes = Arrays.asList(
-                StorageScheme.builder().name_storage_scheme("Открытый полигон").build(),
-                StorageScheme.builder().name_storage_scheme("Закрытый полигон").build(),
-                StorageScheme.builder().name_storage_scheme("Подземное хранение").build(),
-                StorageScheme.builder().name_storage_scheme("Сортировочная станция").build()
-        );
-        storageSchemes = storageSchemeRepository.saveAll(storageSchemes);
-        log.info("Created {} storage schemes", storageSchemes.size());
-
-        // 1.9 Группы мест сохранения
-        List<GroupPlaceSave> groupPlaceSaves = Arrays.asList(
-                GroupPlaceSave.builder().name_group("Хранение на территории предприятия").build(),
-                GroupPlaceSave.builder().name_group("Полигоны твердых коммунальных отходов").build(),
-                GroupPlaceSave.builder().name_group("Места хранения полихлорированных бифенилов").build(),
-                GroupPlaceSave.builder().name_group("Мини-полигоны").build(),
-                GroupPlaceSave.builder().name_group("Объекты хранения отходов очистные сооружения, иловые площадки и др.").build()
-        );
-        groupPlaceSaves = groupPlaceSaveRepository.saveAll(groupPlaceSaves);
-        log.info("Created {} place groups", groupPlaceSaves.size());
-
-        // 1.10 Группы степеней
-        List<GruopsDegree> gruopsDegrees = Arrays.asList(
-                GruopsDegree.builder().namber_gruop(1).build(),
-                GruopsDegree.builder().namber_gruop(2).build(),
-                GruopsDegree.builder().namber_gruop(3).build()
-        );
-        gruopsDegrees = gruopsDegreeRepository.saveAll(gruopsDegrees);
-        log.info("Created {} degree groups", gruopsDegrees.size());
-
-        // 1.11 Комментарии (создаем отдельно для каждого объекта, так как отношение @OneToOne)
-        // Сохраняем их сначала, чтобы потом использовать ID
-
-        // 1.12 Окружающие постройки
-        List<AroundBuild> aroundBuilds = Arrays.asList(
-                AroundBuild.builder().name("Жилой комплекс").build(),
-                AroundBuild.builder().name("Промышленная зона").build(),
-                AroundBuild.builder().name("Лесопарковая зона").build(),
-                AroundBuild.builder().name("Сельскохозяйственные угодья").build(),
-                AroundBuild.builder().name("Водоем").build()
-        );
-        aroundBuilds = aroundBuildRepository.saveAll(aroundBuilds);
-        log.info("Created {} around builds", aroundBuilds.size());
-
-        // 1.13 Природоохранные сооружения
-        List<NatualSaveBuilding> natualSaveBuildings = Arrays.asList(
-                NatualSaveBuilding.builder().name("Защитная дамба").build(),
-                NatualSaveBuilding.builder().name("Дренажная система").build(),
-                NatualSaveBuilding.builder().name("Биоплато").build(),
-                NatualSaveBuilding.builder().name("Ветрозащитная стена").build()
-        );
-        natualSaveBuildings = natualSaveBuildingRepository.saveAll(natualSaveBuildings);
-        log.info("Created {} natural save buildings", natualSaveBuildings.size());
-
-        // ==================== 2. ОСНОВНЫЕ СУЩНОСТИ ====================
-
-        // 2.1 Магазин отходов (связи со справочниками)
+        // 2.2 Справочник отходов (MagazinTrash)
         List<MagazinTrash> magazinTrashes = Arrays.asList(
                 MagazinTrash.builder()
                         .id_class_danger(classDangers.get(0))
-                        .id_type_trash(typeTrash1s.get(0))
-                        .id_level_trash(levelTrashes.get(0))
-                        .id_mame_group(nameGroups.get(0))
-                        .code_trash("010101")
-                        .name_trash("Органические отходы")
-                        .block1(1)
-                        .group2(1)
-                        .group3(1)
+                        .code_trash(31401103)
+                        .name_trash("Лом черных металлов не сортированный")
+                        .build(),
+                MagazinTrash.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .code_trash(31401201)
+                        .name_trash("Лом цветных металлов")
                         .build(),
                 MagazinTrash.builder()
                         .id_class_danger(classDangers.get(2))
-                        .id_type_trash(typeTrash1s.get(2))
-                        .id_level_trash(levelTrashes.get(2))
-                        .id_mame_group(nameGroups.get(2))
-                        .code_trash("020202")
-                        .name_trash("Пластиковые отходы")
-                        .block1(2)
-                        .group2(2)
-                        .group3(3)
+                        .code_trash(57101102)
+                        .name_trash("Пластиковая упаковка")
+                        .build(),
+                MagazinTrash.builder()
+                        .id_class_danger(classDangers.get(3))
+                        .code_trash(35301101)
+                        .name_trash("Отработанные масла")
                         .build(),
                 MagazinTrash.builder()
                         .id_class_danger(classDangers.get(4))
-                        .id_type_trash(typeTrash1s.get(1))
-                        .id_level_trash(levelTrashes.get(4))
-                        .id_mame_group(nameGroups.get(3))
-                        .code_trash("030303")
-                        .name_trash("Металлолом")
-                        .block1(3)
-                        .group2(3)
-                        .group3(5)
+                        .code_trash(35101103)
+                        .name_trash("Строительный мусор")
+                        .build(),
+                MagazinTrash.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .code_trash(92101101)
+                        .name_trash("Макулатура")
+                        .build(),
+                MagazinTrash.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .code_trash(47101102)
+                        .name_trash("Отработанные шины")
+                        .build(),
+                MagazinTrash.builder()
+                        .id_class_danger(classDangers.get(0))
+                        .code_trash(91201101)
+                        .name_trash("Стеклянная тара")
                         .build()
         );
         magazinTrashes = magazinTrashRepository.saveAll(magazinTrashes);
-        log.info("Created {} trash magazines", magazinTrashes.size());
+        log.info("Created {} trash types", magazinTrashes.size());
 
-        // 2.2 Пользователи
-        TestUser user1 = TestUser.builder()
-                .username("eco_inspector")
-                .email("inspector@eco.gov.ua")
-                .passwordHash("$2a$10$encrypted_hash_here")
-                .fullName("Петренко Иван Васильевич")
-                .age(42)
-                .phoneNumber("+380501234567")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        // 2.3 Наименования выбросов в атмосферу
+        List<NameDropAirTrash> nameDropAirTrashes = Arrays.asList(
+                NameDropAirTrash.builder().name_drop_air_trash("Диоксид серы (SO₂)").build(),
+                NameDropAirTrash.builder().name_drop_air_trash("Оксид углерода (CO)").build(),
+                NameDropAirTrash.builder().name_drop_air_trash("Диоксид азота (NO₂)").build(),
+                NameDropAirTrash.builder().name_drop_air_trash("Пыль неорганическая").build(),
+                NameDropAirTrash.builder().name_drop_air_trash("Летучие органические соединения").build(),
+                NameDropAirTrash.builder().name_drop_air_trash("Тяжелые металлы").build()
+        );
+        nameDropAirTrashes = nameDropAirTrashRepository.saveAll(nameDropAirTrashes);
+        log.info("Created {} air drop names", nameDropAirTrashes.size());
 
-        TestUser user2 = TestUser.builder()
-                .username("plant_director")
-                .email("director@ecoplant.com")
-                .passwordHash("$2a$10$encrypted_hash_here")
-                .fullName("Коваленко Сергей Николаевич")
-                .age(55)
-                .phoneNumber("+380671234567")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        // 2.4 Физическое состояние отходов
+        List<PhysStateTrash> physStateTrashes = Arrays.asList(
+                PhysStateTrash.builder().name_group("Твердое").build(),
+                PhysStateTrash.builder().name_group("Жидкое").build(),
+                PhysStateTrash.builder().name_group("Пастообразное").build(),
+                PhysStateTrash.builder().name_group("Сыпучее").build(),
+                PhysStateTrash.builder().name_group("Газообразное").build()
+        );
+        physStateTrashes = physStateTrashRepository.saveAll(physStateTrashes);
+        log.info("Created {} physical states", physStateTrashes.size());
 
-        userRepository.saveAll(Arrays.asList(user1, user2));
-        log.info("Created test users");
+        // 2.5 Краткое описание технологий
+        List<ShortDiscribeTechnology> shortDiscribeTechnologies = Arrays.asList(
+                ShortDiscribeTechnology.builder().technology("Термическая обработка").build(),
+                ShortDiscribeTechnology.builder().technology("Механическая очистка").build(),
+                ShortDiscribeTechnology.builder().technology("Биологическая очистка").build(),
+                ShortDiscribeTechnology.builder().technology("Химическая нейтрализация").build(),
+                ShortDiscribeTechnology.builder().technology("Сортировка и сепарация").build(),
+                ShortDiscribeTechnology.builder().technology("Прессование и брикетирование").build()
+        );
+        shortDiscribeTechnologies = shortDiscribeTechnologyRepository.saveAll(shortDiscribeTechnologies);
+        log.info("Created {} technology descriptions", shortDiscribeTechnologies.size());
 
+        // 2.6 Технологии (связка класса опасности, отхода и физического состояния)
+        List<Technology> technologies = Arrays.asList(
+                Technology.builder()
+                        .id_class_danger(classDangers.get(0))
+                        .id_magazin_trash(magazinTrashes.get(0))
+                        .id_phys_trash(physStateTrashes.get(0))
+                        .build(),
+                Technology.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_magazin_trash(magazinTrashes.get(1))
+                        .id_phys_trash(physStateTrashes.get(0))
+                        .build(),
+                Technology.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_magazin_trash(magazinTrashes.get(2))
+                        .id_phys_trash(physStateTrashes.get(0))
+                        .build(),
+                Technology.builder()
+                        .id_class_danger(classDangers.get(3))
+                        .id_magazin_trash(magazinTrashes.get(3))
+                        .id_phys_trash(physStateTrashes.get(1))
+                        .build(),
+                Technology.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_magazin_trash(magazinTrashes.get(4))
+                        .id_phys_trash(physStateTrashes.get(0))
+                        .build(),
+                Technology.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_magazin_trash(magazinTrashes.get(5))
+                        .id_phys_trash(physStateTrashes.get(0))
+                        .build()
+        );
+        technologies = technologyRepository.saveAll(technologies);
+        log.info("Created {} technologies", technologies.size());
 
+        // ==================== 3. ПРЕДПРИЯТИЯ (MagasinFactory) ====================
 
-        // 2.4 Основные объекты размещения отходов (3 объекта для разнообразия)
-        List<ObjectPlaceTrash> objectPlaceTrashes = Arrays.asList(
-                // Объект 1: Киевский полигон (активный)
-                ObjectPlaceTrash.builder()
+        List<MagasinFactory> magasinFactories = Arrays.asList(
+                // Предприятие 1: Минский металлургический завод
+                MagasinFactory.builder()
                         .id_registration("REG001")
-                        .register(1001)
-                        .date_register(LocalDate.of(2015, 3, 15))
+                        .date_register(LocalDate.of(2010, 5, 15))
                         .id_cities(cities.get(0))
-                        .id_group_place_save(groupPlaceSaves.get(0))
-                        .id_storage_scheme(storageSchemes.get(0))
-                        .id_gruops_degree(gruopsDegrees.get(0))
-                        .name_obj("Киевский полигон ТБО")
-                        .name_own("Киевская городская администрация")
-                        .start_use(2015)
-                        .servise_life("25 лет")
-                        .company_located("ООО Эко-Сервис")
-                        .place_obj("Киевская обл., с. Пидгорцы")
-                        .project("Проект №123/2014")
-                        .state_expertize(true)
-                        .eco_pasport("Пас-001")
-                        .prava_place("Аренда на 49 лет")
-                        .confirmation_use(true)
-                        .square(125000.5f)
-                        .use_square(85000.0f)
-                        .trash_square(40000.0f)
-                        .project_power("500000 тонн/год")
-                        .facticheskay_power("350000 тонн/год")
-                        .accomulated_trash("2500000 тонн")
-                        .type_grounds("Суглинки")
-                        .ander_water("5 метров")
-                        .observation_hole("Скважина №1")
-                        .date_axclute(null)
-                        .reson_axclute(null)
-                        .status(true)
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(0))
+                        .id_technology(technologies.get(0))
+                        .name_obj("Минский металлургический завод")
+                        .name_own("ОАО Белорусский металлургический комбинат")
+                        .address_own("г. Минск, ул. Тимирязева, 1")
+                        .address_obj("г. Минск, ул. Промышленная, 15")
+                        .develop_organization("Гипрометиз")
+                        .confirmed_project("Проект №123/2010")
+                        .date_approve(LocalDate.of(2010, 3, 20))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №45")
+                        .requirements_acts("Соблюдать ПДК выбросов")
+                        .obj_use_trash(true)
+                        .obj_accept_trash(false)
+                        .character_prod("Металлургия")
+                        .project_power_yer("500000")
+                        .project_power_hr("62.5")
+                        .facticheskay_power("480000")
+                        .YNP("123456789")
+                        .value(100)
                         .build(),
 
-                // Объект 2: Львовская сортировочная станция (активная)
-                ObjectPlaceTrash.builder()
+                // Предприятие 2: Брестский завод по переработке пластика
+                MagasinFactory.builder()
                         .id_registration("REG002")
-                        .register(1002)
-                        .date_register(LocalDate.of(2018, 7, 20))
-                        .id_cities(cities.get(2))
-                        .id_group_place_save(groupPlaceSaves.get(3))
-                        .id_storage_scheme(storageSchemes.get(3))
-                        .id_gruops_degree(gruopsDegrees.get(1))
-                        .name_obj("Львовская сортировочная станция")
-                        .name_own("Львовский горсовет")
-                        .start_use(2018)
-                        .servise_life("30 лет")
-                        .company_located("ТОВ Запад-Эко")
-                        .place_obj("г. Львов, ул. Промышленная")
-                        .project("Проект №456/2017")
-                        .state_expertize(true)
-                        .eco_pasport("Пас-002")
-                        .prava_place("Собственность")
-                        .confirmation_use(true)
-                        .square(45000.0f)
-                        .use_square(32000.0f)
-                        .trash_square(18000.0f)
-                        .project_power("200000 тонн/год")
-                        .facticheskay_power("185000 тонн/год")
-                        .accomulated_trash("980000 тонн")
-                        .type_grounds("Глина")
-                        .ander_water("8 метров")
-                        .observation_hole("Скважина №2,3")
-                        .date_axclute(null)
-                        .reson_axclute(null)
-                        .status(true)
+                        .date_register(LocalDate.of(2015, 8, 20))
+                        .id_cities(cities.get(1))
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(4))
+                        .id_technology(technologies.get(2))
+                        .name_obj("Брестский завод переработки пластика")
+                        .name_own("ООО Экопласт")
+                        .address_own("г. Брест, ул. Московская, 10")
+                        .address_obj("г. Брест, ул. Заводская, 25")
+                        .develop_organization("ЭкоТехПроект")
+                        .confirmed_project("Проект №456/2015")
+                        .date_approve(LocalDate.of(2015, 6, 10))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №78")
+                        .requirements_acts("Сортировка вторсырья")
+                        .obj_use_trash(true)
+                        .obj_accept_trash(true)
+                        .character_prod("Переработка отходов")
+                        .project_power_yer("120000")
+                        .project_power_hr("15")
+                        .facticheskay_power("115000")
+                        .YNP("987654321")
+                        .value(50)
                         .build(),
 
-                // Объект 3: Одесский полигон (закрытый/неактивный)
-                ObjectPlaceTrash.builder()
+                // Предприятие 3: Гродненская ТЭЦ
+                MagasinFactory.builder()
                         .id_registration("REG003")
-                        .register(1003)
-                        .date_register(LocalDate.of(2005, 5, 10))
+                        .date_register(LocalDate.of(2005, 3, 10))
+                        .id_cities(cities.get(2))
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(0))
+                        .id_technology(technologies.get(3))
+                        .name_obj("Гродненская ТЭЦ-2")
+                        .name_own("РУП Гродноэнерго")
+                        .address_own("г. Гродно, ул. Энергетиков, 5")
+                        .address_obj("г. Гродно, ул. Тепличная, 1")
+                        .develop_organization("Белэнергопроект")
+                        .confirmed_project("Проект №789/2005")
+                        .date_approve(LocalDate.of(2005, 1, 15))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №12")
+                        .requirements_acts("Очистка дымовых газов")
+                        .obj_use_trash(false)
+                        .obj_accept_trash(false)
+                        .character_prod("Энергетика")
+                        .project_power_yer("2000000")
+                        .project_power_hr("250")
+                        .facticheskay_power("1950000")
+                        .YNP("555444333")
+                        .value(200)
+                        .build(),
+
+                // Предприятие 4: Гомельский маслоэкстракционный завод
+                MagasinFactory.builder()
+                        .id_registration("REG004")
+                        .date_register(LocalDate.of(2018, 11, 25))
                         .id_cities(cities.get(3))
-                        .id_group_place_save(groupPlaceSaves.get(2))
-                        .id_storage_scheme(storageSchemes.get(1))
-                        .id_gruops_degree(gruopsDegrees.get(2))
-                        .name_obj("Одесский полигон ТБО")
-                        .name_own("Одесская областная администрация")
-                        .start_use(2005)
-                        .servise_life("20 лет")
-                        .company_located("ТОВ Чистое море")
-                        .place_obj("Одесская обл., с. Усатово")
-                        .project("Проект №789/2004")
-                        .state_expertize(true)
-                        .eco_pasport("Пас-003")
-                        .prava_place("Постоянное пользование")
-                        .confirmation_use(false)
-                        .square(85000.0f)
-                        .use_square(85000.0f)
-                        .trash_square(82000.0f)
-                        .project_power("300000 тонн/год")
-                        .facticheskay_power("280000 тонн/год")
-                        .accomulated_trash("4500000 тонн")
-                        .type_grounds("Известняк")
-                        .ander_water("3 метра")
-                        .observation_hole("Скважина №4,5,6")
-                        .date_axclute(LocalDate.of(2025, 12, 31))
-                        .reson_axclute("Исчерпание мощности, закрытие по экологическим нормам")
-                        .status(false)
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(2))
+                        .id_technology(technologies.get(4))
+                        .name_obj("Гомельский МЭЗ")
+                        .name_own("СП ООО Гомельмасло")
+                        .address_own("г. Гомель, ул. Советская, 50")
+                        .address_obj("г. Гомель, ул. Заводская, 100")
+                        .develop_organization("Агропромпроект")
+                        .confirmed_project("Проект №321/2018")
+                        .date_approve(LocalDate.of(2018, 8, 30))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №56")
+                        .requirements_acts("Очистка сточных вод")
+                        .obj_use_trash(false)
+                        .obj_accept_trash(false)
+                        .character_prod("Пищевая промышленность")
+                        .project_power_yer("300000")
+                        .project_power_hr("37.5")
+                        .facticheskay_power("285000")
+                        .YNP("111222333")
+                        .value(75)
+                        .build(),
+
+                // Предприятие 5: Витебский полигон ТБО
+                MagasinFactory.builder()
+                        .id_registration("REG005")
+                        .date_register(LocalDate.of(2000, 6, 1))
+                        .id_cities(cities.get(4))
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(5))
+                        .id_technology(technologies.get(5))
+                        .name_obj("Витебский полигон ТБО")
+                        .name_own("Витебский городской исполком")
+                        .address_own("г. Витебск, ул. Ленина, 15")
+                        .address_obj("Витебский р-н, д. Заречье")
+                        .develop_organization("Горкомхоз")
+                        .confirmed_project("Проект №555/2000")
+                        .date_approve(LocalDate.of(2000, 3, 1))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №1")
+                        .requirements_acts("Герметизация отходов")
+                        .obj_use_trash(false)
+                        .obj_accept_trash(true)
+                        .character_prod("Размещение отходов")
+                        .project_power_yer("400000")
+                        .project_power_hr("50")
+                        .facticheskay_power("380000")
+                        .YNP("999888777")
+                        .value(150)
+                        .build(),
+
+                // Предприятие 6: Могилёвский завод ЖБИ
+                MagasinFactory.builder()
+                        .id_registration("REG006")
+                        .date_register(LocalDate.of(2012, 7, 18))
+                        .id_cities(cities.get(5))
+                        .id_short_discribe_technology(shortDiscribeTechnologies.get(1))
+                        .id_technology(technologies.get(1))
+                        .name_obj("Могилёвский завод ЖБИ")
+                        .name_own("ОАО Могилёвстрой")
+                        .address_own("г. Могилёв, пр. Мира, 30")
+                        .address_obj("г. Могилёв, ул. Строителей, 45")
+                        .develop_organization("Стройпроект")
+                        .confirmed_project("Проект №777/2012")
+                        .date_approve(LocalDate.of(2012, 5, 5))
+                        .conclusion_documentation(true)
+                        .act_use("Акт ввода №99")
+                        .requirements_acts("Пылеулавливание")
+                        .obj_use_trash(true)
+                        .obj_accept_trash(false)
+                        .character_prod("Строительные материалы")
+                        .project_power_yer("80000")
+                        .project_power_hr("10")
+                        .facticheskay_power("75000")
+                        .YNP("444555666")
+                        .value(40)
                         .build()
         );
-        objectPlaceTrashes = objectPlaceTrashRepository.saveAll(objectPlaceTrashes);
-        log.info("Created {} trash objects", objectPlaceTrashes.size());
 
-        // 2.5 Связи объектов с окружающими постройками (многие ко многим через таблицу AroundBuildCount)
-        List<AroundBuildCount> aroundBuildCounts = Arrays.asList(
-                AroundBuildCount.builder()
-                        .id_around_build(aroundBuilds.get(0))
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
+        magasinFactories = magasinFactoryRepository.saveAll(magasinFactories);
+        log.info("Created {} enterprises (MagasinFactory)", magasinFactories.size());
+
+        // ==================== 4. ОТХОДЫ ПРЕДПРИЯТИЙ (MyTrash) ====================
+
+        List<MyTrash> myTrashes = Arrays.asList(
+                // Отходы для Минского металлургического завода
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(0))
+                        .id_magazin_trash(magazinTrashes.get(0))
+
+                        .value_trash(12500.5f)
                         .build(),
-                AroundBuildCount.builder()
-                        .id_around_build(aroundBuilds.get(1))
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_magazin_trash(magazinTrashes.get(1))
+
+                        .value_trash(250.3f)
                         .build(),
-                AroundBuildCount.builder()
-                        .id_around_build(aroundBuilds.get(2))
-                        .id_object_place_trash(objectPlaceTrashes.get(1))
+
+                // Отходы для Брестского завода пластика
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_magazin_trash(magazinTrashes.get(2))
+
+                        .value_trash(8000.0f)
                         .build(),
-                AroundBuildCount.builder()
-                        .id_around_build(aroundBuilds.get(3))
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_magazin_trash(magazinTrashes.get(5))
+
+                        .value_trash(1500.0f)
                         .build(),
-                AroundBuildCount.builder()
-                        .id_around_build(aroundBuilds.get(4))
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
+
+                // Отходы для Гродненской ТЭЦ
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(3))
+                        .id_magazin_trash(magazinTrashes.get(3))
+
+                        .value_trash(50000.0f)
+                        .build(),
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_magazin_trash(magazinTrashes.get(4))
+
+                        .value_trash(35000.0f)
+                        .build(),
+
+                // Отходы для Гомельского МЭЗ
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(3))
+
+                        .value_trash(500.0f)
+                        .build(),
+
+                // Отходы для Витебского полигона
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_magazin_trash(magazinTrashes.get(4))
+
+                        .value_trash(280000.0f)
+                        .build(),
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_magazin_trash(magazinTrashes.get(2))
+
+                        .value_trash(45000.0f)
+                        .build(),
+
+                // Отходы для Могилёвского завода ЖБИ
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_magazin_trash(magazinTrashes.get(4))
+
+                        .value_trash(12000.0f)
+                        .build(),
+                MyTrash.builder()
+                        .id_class_danger(classDangers.get(0))
+                        .id_magazin_trash(magazinTrashes.get(7))
+
+                        .value_trash(3000.0f)
                         .build()
         );
-        aroundBuildCountRepository.saveAll(aroundBuildCounts);
-        log.info("Created {} around build connections", aroundBuildCounts.size());
 
-        // 2.6 Связи с природоохранными сооружениями
-        List<NatualSaveBuildCount> natualSaveBuildCounts = Arrays.asList(
-                NatualSaveBuildCount.builder()
-                        .id_natual_save_build(natualSaveBuildings.get(0))
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
+        myTrashes = myTrashRepository.saveAll(myTrashes);
+        log.info("Created {} trash records (MyTrash)", myTrashes.size());
+
+        // ==================== 5. ВЫБРОСЫ В АТМОСФЕРУ (DropAir) ====================
+
+        List<DropAir> dropAirs = Arrays.asList(
+                // Выбросы Минского металлургического завода
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_name_grope_air(nameDropAirTrashes.get(0))
+                        .id_magasin_factory(magasinFactories.get(0))
+                        .value_drop_trash(150.5f)
                         .build(),
-                NatualSaveBuildCount.builder()
-                        .id_natual_save_build(natualSaveBuildings.get(1))
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(3))
+                        .id_name_grope_air(nameDropAirTrashes.get(1))
+                        .id_magasin_factory(magasinFactories.get(0))
+                        .value_drop_trash(85.3f)
                         .build(),
-                NatualSaveBuildCount.builder()
-                        .id_natual_save_build(natualSaveBuildings.get(2))
-                        .id_object_place_trash(objectPlaceTrashes.get(1))
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_name_grope_air(nameDropAirTrashes.get(2))
+                        .id_magasin_factory(magasinFactories.get(0))
+                        .value_drop_trash(45.2f)
                         .build(),
-                NatualSaveBuildCount.builder()
-                        .id_natual_save_build(natualSaveBuildings.get(3))
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
+
+                // Выбросы Брестского завода пластика
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_name_grope_air(nameDropAirTrashes.get(3))
+                        .id_magasin_factory(magasinFactories.get(1))
+                        .value_drop_trash(30.0f)
+                        .build(),
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_name_grope_air(nameDropAirTrashes.get(4))
+                        .id_magasin_factory(magasinFactories.get(1))
+                        .value_drop_trash(65.7f)
+                        .build(),
+
+                // Выбросы Гродненской ТЭЦ
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(1))
+                        .id_name_grope_air(nameDropAirTrashes.get(0))
+                        .id_magasin_factory(magasinFactories.get(2))
+                        .value_drop_trash(420.0f)
+                        .build(),
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_name_grope_air(nameDropAirTrashes.get(2))
+                        .id_magasin_factory(magasinFactories.get(2))
+                        .value_drop_trash(180.5f)
+                        .build(),
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(3))
+                        .id_name_grope_air(nameDropAirTrashes.get(1))
+                        .id_magasin_factory(magasinFactories.get(2))
+                        .value_drop_trash(95.8f)
+                        .build(),
+
+                // Выбросы Гомельского МЭЗ
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_name_grope_air(nameDropAirTrashes.get(3))
+                        .id_magasin_factory(magasinFactories.get(3))
+                        .value_drop_trash(12.5f)
+                        .build(),
+
+                // Выбросы Витебского полигона
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_name_grope_air(nameDropAirTrashes.get(3))
+                        .id_magasin_factory(magasinFactories.get(4))
+                        .value_drop_trash(85.0f)
+                        .build(),
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(2))
+                        .id_name_grope_air(nameDropAirTrashes.get(4))
+                        .id_magasin_factory(magasinFactories.get(4))
+                        .value_drop_trash(45.3f)
+                        .build(),
+
+                // Выбросы Могилёвского завода ЖБИ
+                DropAir.builder()
+                        .id_class_danger(classDangers.get(4))
+                        .id_name_grope_air(nameDropAirTrashes.get(3))
+                        .id_magasin_factory(magasinFactories.get(5))
+                        .value_drop_trash(55.0f)
                         .build()
         );
-        natualSaveBuildCountRepository.saveAll(natualSaveBuildCounts);
-        log.info("Created {} natural save connections", natualSaveBuildCounts.size());
 
-        // 2.7 Номера телефонов объектов
+        dropAirs = dropAirRepository.saveAll(dropAirs);
+        log.info("Created {} air emissions (DropAir)", dropAirs.size());
+
+        // ==================== 6. НОМЕРА ТЕЛЕФОНОВ ====================
+
         List<NumberPhone> numberPhones = Arrays.asList(
-                NumberPhone.builder()
-                        .number("+380442345678")
-                        .build(),
-                NumberPhone.builder()
-                        .number("+380442345679")
-                        .build(),
-                NumberPhone.builder()
-                        .number("+380322345678")
-                        .build(),
-                NumberPhone.builder()
-                        .number("+380482345678")
-                        .build()
+                NumberPhone.builder().number("+375171234567").build(),
+                NumberPhone.builder().number("+375171234568").build(),
+                NumberPhone.builder().number("+375162345678").build(),
+                NumberPhone.builder().number("+375152345678").build(),
+                NumberPhone.builder().number("+375232345678").build(),
+                NumberPhone.builder().number("+375212345678").build(),
+                NumberPhone.builder().number("+375222345678").build(),
+                NumberPhone.builder().number("+375177777777").build(),
+                NumberPhone.builder().number("+375163333333").build()
         );
         numberPhones = numberPhoneRepository.saveAll(numberPhones);
+        log.info("Created {} phone numbers", numberPhones.size());
+
+        // ==================== 7. СВЯЗИ ПРЕДПРИЯТИЙ С ТЕЛЕФОНАМИ (NumberPhoneCount) ====================
+
         List<NumberPhoneCount> numberPhoneCounts = Arrays.asList(
+                // Телефоны Минского металлургического завода
                 NumberPhoneCount.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
                         .id_phone_number(numberPhones.get(0))
-                        .ur_ob(0)
+                        .id_object_place_trash(magasinFactories.get(0))
+                        .ur_ob(1)
                         .build(),
                 NumberPhoneCount.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
                         .id_phone_number(numberPhones.get(1))
-                        .ur_ob(1)
-                        .build(),
-                NumberPhoneCount.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(1))
-                        .id_phone_number(numberPhones.get(2))
+                        .id_object_place_trash(magasinFactories.get(0))
                         .ur_ob(0)
                         .build(),
+
+                // Телефоны Брестского завода пластика
                 NumberPhoneCount.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
+                        .id_phone_number(numberPhones.get(2))
+                        .id_object_place_trash(magasinFactories.get(1))
+                        .ur_ob(1)
+                        .build(),
+                NumberPhoneCount.builder()
+                        .id_phone_number(numberPhones.get(8))
+                        .id_object_place_trash(magasinFactories.get(1))
+                        .ur_ob(0)
+                        .build(),
+
+                // Телефоны Гродненской ТЭЦ
+                NumberPhoneCount.builder()
                         .id_phone_number(numberPhones.get(3))
+                        .id_object_place_trash(magasinFactories.get(2))
+                        .ur_ob(1)
+                        .build(),
+
+                // Телефоны Гомельского МЭЗ
+                NumberPhoneCount.builder()
+                        .id_phone_number(numberPhones.get(4))
+                        .id_object_place_trash(magasinFactories.get(3))
+                        .ur_ob(1)
+                        .build(),
+
+                // Телефоны Витебского полигона
+                NumberPhoneCount.builder()
+                        .id_phone_number(numberPhones.get(5))
+                        .id_object_place_trash(magasinFactories.get(4))
+                        .ur_ob(1)
+                        .build(),
+                NumberPhoneCount.builder()
+                        .id_phone_number(numberPhones.get(7))
+                        .id_object_place_trash(magasinFactories.get(4))
+                        .ur_ob(0)
+                        .build(),
+
+                // Телефоны Могилёвского завода ЖБИ
+                NumberPhoneCount.builder()
+                        .id_phone_number(numberPhones.get(6))
+                        .id_object_place_trash(magasinFactories.get(5))
                         .ur_ob(1)
                         .build()
         );
+
         numberPhoneCountRepository.saveAll(numberPhoneCounts);
-        log.info("Created {} phone numbers and {} links", numberPhones.size(), numberPhoneCounts.size());
+        log.info("Created {} phone-enterprise links", numberPhoneCounts.size());
 
-        // 2.8 Очистные сооружения
-        List<CleanerBuilds> cleanerBuilds = Arrays.asList(
-                CleanerBuilds.builder()
-                        .registr_number("CLN001")
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
-                        .name_object("Фильтрационная станция №1")
-                        .start_use(2016)
-                        .all_square(2500.5f)
-                        .trash_count(15000.0f)
+        // ==================== 8. СВЯЗИ ОТХОДОВ С ПРЕДПРИЯТИЯМИ (MyTrashCount) ====================
+        // Примечание: если MyTrashCount используется как связующая таблица ManyToMany,
+        // раскомментируйте код ниже. Сейчас MyTrash уже имеет прямую связь с MagasinFactory.
+
+        /*
+        List<MyTrashCount> myTrashCounts = Arrays.asList(
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(0))
+                        .id_object_place_trash(magasinFactories.get(0))
                         .build(),
-                CleanerBuilds.builder()
-                        .registr_number("CLN002")
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
-                        .name_object("Биологическая очистка")
-                        .start_use(2017)
-                        .all_square(1800.0f)
-                        .trash_count(12000.0f)
-                        .build(),
-                CleanerBuilds.builder()
-                        .registr_number("CLN003")
-                        .id_object_place_trash(objectPlaceTrashes.get(1))
-                        .name_object("Сортировочная линия")
-                        .start_use(2019)
-                        .all_square(3500.0f)
-                        .trash_count(25000.0f)
-                        .build(),
-                CleanerBuilds.builder()
-                        .registr_number("CLN004")
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
-                        .name_object("Система сбора фильтрата")
-                        .start_use(2006)
-                        .all_square(1200.0f)
-                        .trash_count(8500.0f)
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(1))
+                        .id_object_place_trash(magasinFactories.get(0))
                         .build()
+                // добавьте остальные связи по необходимости
         );
-        cleanerBuildsRepository.saveAll(cleanerBuilds);
-        log.info("Created {} cleaner buildings", cleanerBuilds.size());
-
-        // 2.9 Характеристики отходов (ОДНА характеристика на объект)
-        List<CharacteristicTrash> characteristicTrashes = Arrays.asList(
-                // Характеристика для Киевского полигона
-                CharacteristicTrash.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(0))
-                        .id_magazin_trash(magazinTrashes.get(0))
-                        .id_state(physicalStates.get(0))
-                        .weight_for_year(350000.5f)
-                        .square_for_year(12500.0f)
-                        .build(),
-
-                // Характеристика для Львовской сортировочной станции
-                CharacteristicTrash.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(1))
-                        .id_magazin_trash(magazinTrashes.get(1))
-                        .id_state(physicalStates.get(0))
-                        .weight_for_year(185000.3f)
-                        .square_for_year(8500.0f)
-                        .build(),
-
-                // Характеристика для Одесского полигона
-                CharacteristicTrash.builder()
-                        .id_object_place_trash(objectPlaceTrashes.get(2))
-                        .id_magazin_trash(magazinTrashes.get(2))
-                        .id_state(physicalStates.get(3))
-                        .weight_for_year(280000.7f)
-                        .square_for_year(15000.0f)
-                        .build()
-        );
-        characteristicTrashRepository.saveAll(characteristicTrashes);
-        log.info("Created {} trash characteristics (one per object)", characteristicTrashes.size());
+        myTrashCountRepository.saveAll(myTrashCounts);
+        log.info("Created {} myTrashCount links", myTrashCounts.size());
+        */
 
         log.info("========================================");
         log.info("Database initialization completed successfully!");
         log.info("Created:");
         log.info("  - {} regions", regions.size());
+        log.info("  - {} districts", districts.size());
         log.info("  - {} cities", cities.size());
-        log.info("  - {} trash objects", objectPlaceTrashes.size());
-        log.info("  - {} users", 2);
-        log.info("  - {} comments", 3);
-        log.info("  - {} trash characteristics (1 per object)", characteristicTrashes.size());
-        log.info("  - {} cleaner buildings", cleanerBuilds.size());
+        log.info("  - {} danger classes", classDangers.size());
+        log.info("  - {} trash types", magazinTrashes.size());
+        log.info("  - {} air drop names", nameDropAirTrashes.size());
+        log.info("  - {} physical states", physStateTrashes.size());
+        log.info("  - {} tech descriptions", shortDiscribeTechnologies.size());
+        log.info("  - {} technologies", technologies.size());
+        log.info("  - {} enterprises", magasinFactories.size());
+        log.info("  - {} trash records", myTrashes.size());
+        log.info("  - {} air emissions", dropAirs.size());
         log.info("  - {} phone numbers", numberPhones.size());
+        log.info("  - {} phone links", numberPhoneCounts.size());
         log.info("========================================");
     }
 }

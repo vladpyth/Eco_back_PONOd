@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Запрос для сущности NumberPhone")
 public class NumberPhoneRequest {
 
-    @Schema(description = "ID ObjectPlaceTrash (обязателен при POST / создании привязки; для PUT можно не указывать, если меняется только строка номера)")
+    @Schema(description = "ID MagasinFactory (обязателен при POST / создании привязки; для PUT можно не указывать, если меняется только строка номера)")
     private Long idObjectPlaceTrash;
 
     @Schema(description = "Номер телефона", example = "+375291234567")

@@ -1,12 +1,12 @@
 package com.example.eco_service.repositories;
 
-import com.example.eco_service.entities.MagasinFactory;
-import com.example.eco_service.entities.MagazinTrash;
+import com.example.eco_service.entities.District;
+import com.example.eco_service.entities.DropAir;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InterfMagazinTrash extends JpaRepository<MagazinTrash, Long>, RevisionRepository<MagazinTrash , Long, Integer> {
+public interface InterfDropAir extends JpaRepository<DropAir, Long>, RevisionRepository<DropAir, Long, Integer> {
 
 }

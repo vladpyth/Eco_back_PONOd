@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
+
 
 @Data
 @Builder
@@ -15,25 +15,20 @@ import org.hibernate.envers.Audited;
 @AllArgsConstructor
 @Entity
 @Audited
-@Table(name = "NumberPhoneCount")
-public class NumberPhoneCount {
+@Table(name = "MyTrashCount")
+public class MyTrashCount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_number_phone_count;
+    private Long id_my_trash_count;
 
     @ManyToOne
-    @JoinColumn(name = "id_phone_number")
-    private NumberPhone id_phone_number;
+    @JoinColumn(name = "id_my_trash")
+    private MyTrash id_my_trash;
 
     @ManyToOne
     @JoinColumn(name = "id_object_place_trash")
     @JsonIgnore
     private MagasinFactory id_object_place_trash;
 
-
-    @Column(nullable = false)
-    @ColumnDefault("0")
-    private int ur_ob;
 }
-
