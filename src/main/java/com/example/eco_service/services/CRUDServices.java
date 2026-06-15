@@ -714,6 +714,54 @@ public class CRUDServices {
 
     // ==================== MY TRASH CRUD ====================
 
+    private void enrichMyTrashWithFactory(MyTrash entity) {
+        if (entity == null || entity.getId_my_trash() == null) {
+            return;
+        }
+        myTrashCountRepository.findAllByMyTrashId(entity.getId_my_trash()).stream()
+                .findFirst()
+                .ifPresent(link -> entity.setId_magasin_factory(link.getId_object_place_trash()));
+    }
+
+    private void syncMyTrashFactoryLink(MyTrash myTrash, Long factoryId) {
+        if (myTrash.getId_my_trash() == null) {
+            return;
+        }
+
+        List<MyTrashCount> existing = myTrashCountRepository.findAllByMyTrashId(myTrash.getId_my_trash());
+        if (factoryId == null) {
+            if (!existing.isEmpty()) {
+                myTrashCountRepository.deleteAll(existing);
+            }
+            return;
+        }
+
+        MagasinFactory factory = magasinFactoryRepository.findById(factoryId)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + factoryId));
+
+        for (MyTrashCount link : existing) {
+            if (link.getId_object_place_trash() != null
+                    && factoryId.equals(link.getId_object_place_trash().getId_magasin_factory())) {
+                return;
+            }
+        }
+
+        if (!existing.isEmpty()) {
+            MyTrashCount link = existing.get(0);
+            link.setId_object_place_trash(factory);
+            myTrashCountRepository.save(link);
+            if (existing.size() > 1) {
+                myTrashCountRepository.deleteAll(existing.subList(1, existing.size()));
+            }
+            return;
+        }
+
+        myTrashCountRepository.save(MyTrashCount.builder()
+                .id_my_trash(myTrash)
+                .id_object_place_trash(factory)
+                .build());
+    }
+
     public MyTrash createMyTrash(MyTrashRequest request) {
         log.info("Creating MyTrash");
 
@@ -723,30 +771,36 @@ public class CRUDServices {
         MagazinTrash magazinTrash = magazinTrashRepository.findById(request.getId_magazin_trash())
                 .orElseThrow(() -> new RuntimeException("MagazinTrash not found with id: " + request.getId_magazin_trash()));
 
-        MagasinFactory magasinFactory = magasinFactoryRepository.findById(request.getId_magasin_factory())
+        magasinFactoryRepository.findById(request.getId_magasin_factory())
                 .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + request.getId_magasin_factory()));
 
         MyTrash entity = MyTrash.builder()
                 .id_class_danger(classDanger)
                 .id_magazin_trash(magazinTrash)
-
                 .value_trash(request.getValue_trash())
                 .build();
 
-        return myTrashRepository.save(entity);
+        MyTrash saved = myTrashRepository.save(entity);
+        syncMyTrashFactoryLink(saved, request.getId_magasin_factory());
+        enrichMyTrashWithFactory(saved);
+        return saved;
     }
 
     @Transactional(readOnly = true)
     public List<MyTrash> findAllMyTrashes() {
         log.info("Fetching all MyTrashes");
-        return myTrashRepository.findAll();
+        List<MyTrash> list = myTrashRepository.findAll();
+        list.forEach(this::enrichMyTrashWithFactory);
+        return list;
     }
 
     @Transactional(readOnly = true)
     public MyTrash findByIdMyTrash(Long id) {
         log.info("Fetching MyTrash by id: {}", id);
-        return myTrashRepository.findById(id)
+        MyTrash entity = myTrashRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("MyTrash not found with id: " + id));
+        enrichMyTrashWithFactory(entity);
+        return entity;
     }
 
     public MyTrash updateMyTrash(Long id, MyTrashRequest request) {
@@ -767,13 +821,17 @@ public class CRUDServices {
             entity.setId_magazin_trash(magazinTrash);
         }
 
-
+        if (request.getId_magasin_factory() != null) {
+            syncMyTrashFactoryLink(entity, request.getId_magasin_factory());
+        }
 
         if (request.getValue_trash() != null) {
             entity.setValue_trash(request.getValue_trash());
         }
 
-        return myTrashRepository.save(entity);
+        MyTrash saved = myTrashRepository.save(entity);
+        enrichMyTrashWithFactory(saved);
+        return saved;
     }
 
     public void deleteMyTrash(Long id) {
@@ -781,6 +839,11 @@ public class CRUDServices {
 
         if (!myTrashRepository.existsById(id)) {
             throw new RuntimeException("MyTrash not found with id: " + id);
+        }
+
+        List<MyTrashCount> links = myTrashCountRepository.findAllByMyTrashId(id);
+        if (!links.isEmpty()) {
+            myTrashCountRepository.deleteAll(links);
         }
 
         myTrashRepository.deleteById(id);

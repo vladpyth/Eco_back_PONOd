@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +42,12 @@ public class DataInitializer implements CommandLineRunner {
 
         // Проверяем, пустая ли БД (по основной таблице)
         if (magasinFactoryRepository.count() > 0) {
-            log.info("Database already contains data. Skipping initialization.");
+            if (myTrashCountRepository.count() == 0 && myTrashRepository.count() > 0) {
+                log.info("Database has MyTrash without factory links. Backfilling MyTrashCount...");
+                backfillMyTrashCounts();
+            } else {
+                log.info("Database already contains data. Skipping initialization.");
+            }
             return;
         }
 
@@ -476,7 +482,7 @@ public class DataInitializer implements CommandLineRunner {
                 // Отходы для Гомельского МЭЗ
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(3))
-
+                        .id_magazin_trash(magazinTrashes.get(3))
                         .value_trash(500.0f)
                         .build(),
 
@@ -684,11 +690,9 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Created {} phone-enterprise links", numberPhoneCounts.size());
 
         // ==================== 8. СВЯЗИ ОТХОДОВ С ПРЕДПРИЯТИЯМИ (MyTrashCount) ====================
-        // Примечание: если MyTrashCount используется как связующая таблица ManyToMany,
-        // раскомментируйте код ниже. Сейчас MyTrash уже имеет прямую связь с MagasinFactory.
 
-        /*
         List<MyTrashCount> myTrashCounts = Arrays.asList(
+                // Минский металлургический завод
                 MyTrashCount.builder()
                         .id_my_trash(myTrashes.get(0))
                         .id_object_place_trash(magasinFactories.get(0))
@@ -696,12 +700,56 @@ public class DataInitializer implements CommandLineRunner {
                 MyTrashCount.builder()
                         .id_my_trash(myTrashes.get(1))
                         .id_object_place_trash(magasinFactories.get(0))
+                        .build(),
+
+                // Брестский завод переработки пластика
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(2))
+                        .id_object_place_trash(magasinFactories.get(1))
+                        .build(),
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(3))
+                        .id_object_place_trash(magasinFactories.get(1))
+                        .build(),
+
+                // Гродненская ТЭЦ
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(4))
+                        .id_object_place_trash(magasinFactories.get(2))
+                        .build(),
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(5))
+                        .id_object_place_trash(magasinFactories.get(2))
+                        .build(),
+
+                // Гомельский МЭЗ
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(6))
+                        .id_object_place_trash(magasinFactories.get(3))
+                        .build(),
+
+                // Витебский полигон ТБО
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(7))
+                        .id_object_place_trash(magasinFactories.get(4))
+                        .build(),
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(8))
+                        .id_object_place_trash(magasinFactories.get(4))
+                        .build(),
+
+                // Могилёвский завод ЖБИ
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(9))
+                        .id_object_place_trash(magasinFactories.get(5))
+                        .build(),
+                MyTrashCount.builder()
+                        .id_my_trash(myTrashes.get(10))
+                        .id_object_place_trash(magasinFactories.get(5))
                         .build()
-                // добавьте остальные связи по необходимости
         );
         myTrashCountRepository.saveAll(myTrashCounts);
         log.info("Created {} myTrashCount links", myTrashCounts.size());
-        */
 
         log.info("========================================");
         log.info("Database initialization completed successfully!");
@@ -720,6 +768,44 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  - {} air emissions", dropAirs.size());
         log.info("  - {} phone numbers", numberPhones.size());
         log.info("  - {} phone links", numberPhoneCounts.size());
+        log.info("  - {} myTrashCount links", myTrashCounts.size());
         log.info("========================================");
+    }
+
+    /**
+     * Связи отход → предприятие по порядку тестовых данных (11 отходов, 6 предприятий).
+     */
+    private void backfillMyTrashCounts() {
+        List<MyTrash> trashes = myTrashRepository.findAll().stream()
+                .sorted(Comparator.comparing(MyTrash::getId_my_trash))
+                .toList();
+        List<MagasinFactory> factories = magasinFactoryRepository.findAll().stream()
+                .sorted(Comparator.comparing(MagasinFactory::getId_magasin_factory))
+                .toList();
+
+        int[][] trashToFactoryIndex = {
+                {0, 0}, {1, 0},
+                {2, 1}, {3, 1},
+                {4, 2}, {5, 2},
+                {6, 3},
+                {7, 4}, {8, 4},
+                {9, 5}, {10, 5}
+        };
+
+        if (trashes.size() < trashToFactoryIndex.length || factories.isEmpty()) {
+            log.warn("Cannot backfill MyTrashCount: trashes={}, factories={}",
+                    trashes.size(), factories.size());
+            return;
+        }
+
+        List<MyTrashCount> links = Arrays.stream(trashToFactoryIndex)
+                .map(pair -> MyTrashCount.builder()
+                        .id_my_trash(trashes.get(pair[0]))
+                        .id_object_place_trash(factories.get(Math.min(pair[1], factories.size() - 1)))
+                        .build())
+                .toList();
+
+        myTrashCountRepository.saveAll(links);
+        log.info("Backfilled {} myTrashCount links", links.size());
     }
 }

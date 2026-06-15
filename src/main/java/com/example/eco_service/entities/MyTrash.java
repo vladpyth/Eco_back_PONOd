@@ -24,6 +24,9 @@ public class MyTrash {
     @JoinColumn(name = "id_magazin_trash")
     private MagazinTrash id_magazin_trash;
 
+    /** Предприятие через MyTrashCount (не колонка таблицы MyTrash). */
+    @Transient
+    private MagasinFactory id_magasin_factory;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
