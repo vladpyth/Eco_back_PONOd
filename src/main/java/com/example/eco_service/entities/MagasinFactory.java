@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
@@ -45,6 +47,8 @@ public class MagasinFactory {
 
     @ManyToOne
     @JoinColumn(name = "id_technology",nullable = true)// ne to
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Technology id_technology ;
 
 

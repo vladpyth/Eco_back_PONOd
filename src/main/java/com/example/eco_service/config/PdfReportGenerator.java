@@ -41,10 +41,9 @@ public class PdfReportGenerator {
     private static final int COL_NAME_OWN = 3;
     private static final int COL_ADDRESS_OWN = 4;
     private static final int COL_PHONE_OWN = 5;
-    private static final int COL_VALUE_TRASH = 6;
-    private static final int COL_USE_TRASH = 7;
-    private static final int COL_ACCEPT_TRASH = 8;
-    private static final int COLUMN_COUNT = 9;
+    private static final int COL_USE_TRASH = 6;
+    private static final int COL_ACCEPT_TRASH = 7;
+    private static final int COLUMN_COUNT = 8;
 
     private static final PDType1Font HELVETICA = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
     private static final PDType1Font HELVETICA_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
@@ -224,7 +223,7 @@ public class PdfReportGenerator {
         String[] headers = {
                 "Наименование объекта", "Место нахождения объекта", "Телефон объекта",
                 "Собственник", "Место нахождения собственника", "Телефон собственника",
-                "Кол-во отхода (т)", "Обезвреживает собственные", "Принимает от других"
+                "Обезвреживает собственные", "Принимает от других"
         };
 
         int maxLines = 0;
@@ -247,9 +246,8 @@ public class PdfReportGenerator {
                                WasteTypeReportDto.FactoryForWasteReportDto factory) throws IOException {
         String checkboxYes = "✓";
         String checkboxNo = "✗";
-        String valueTrash = factory.getValueTrash() != null ? String.format("%.2f", factory.getValueTrash()) : "—";
 
-        int l1, l2, l3, l4, l5, l6, l7, l8, l9;
+        int l1, l2, l3, l4, l5, l6, l7, l8;
 
         if (useStandardFonts || font == null) {
             l1 = drawWrappedTextStandard(contentStream, colStarts[COL_NAME_OBJ], yPosition, colWidth - 8,
@@ -259,10 +257,9 @@ public class PdfReportGenerator {
             l4 = drawWrappedTextStandard(contentStream, colStarts[COL_NAME_OWN], yPosition, colWidth - 8, getValue(factory.getNameOwn()));
             l5 = drawWrappedTextStandard(contentStream, colStarts[COL_ADDRESS_OWN], yPosition, colWidth - 8, getValue(factory.getAddressOwn()));
             l6 = drawWrappedTextStandard(contentStream, colStarts[COL_PHONE_OWN], yPosition, colWidth - 8, getValue(factory.getPhoneOwn()));
-            l7 = drawWrappedTextStandard(contentStream, colStarts[COL_VALUE_TRASH], yPosition, colWidth - 8, valueTrash);
-            l8 = drawWrappedTextStandard(contentStream, colStarts[COL_USE_TRASH], yPosition, colWidth - 8,
+            l7 = drawWrappedTextStandard(contentStream, colStarts[COL_USE_TRASH], yPosition, colWidth - 8,
                     Boolean.TRUE.equals(factory.getObjUseTrash()) ? checkboxYes : checkboxNo);
-            l9 = drawWrappedTextStandard(contentStream, colStarts[COL_ACCEPT_TRASH], yPosition, colWidth - 8,
+            l8 = drawWrappedTextStandard(contentStream, colStarts[COL_ACCEPT_TRASH], yPosition, colWidth - 8,
                     Boolean.TRUE.equals(factory.getObjAcceptTrash()) ? checkboxYes : checkboxNo);
         } else {
             l1 = drawWrappedText(contentStream, font, 8, colStarts[COL_NAME_OBJ], yPosition, colWidth - 8,
@@ -272,15 +269,14 @@ public class PdfReportGenerator {
             l4 = drawWrappedText(contentStream, font, 8, colStarts[COL_NAME_OWN], yPosition, colWidth - 8, getValue(factory.getNameOwn()));
             l5 = drawWrappedText(contentStream, font, 8, colStarts[COL_ADDRESS_OWN], yPosition, colWidth - 8, getValue(factory.getAddressOwn()));
             l6 = drawWrappedText(contentStream, font, 8, colStarts[COL_PHONE_OWN], yPosition, colWidth - 8, getValue(factory.getPhoneOwn()));
-            l7 = drawWrappedText(contentStream, font, 8, colStarts[COL_VALUE_TRASH], yPosition, colWidth - 8, valueTrash);
-            l8 = drawWrappedText(contentStream, font, 8, colStarts[COL_USE_TRASH], yPosition, colWidth - 8,
+            l7 = drawWrappedText(contentStream, font, 8, colStarts[COL_USE_TRASH], yPosition, colWidth - 8,
                     Boolean.TRUE.equals(factory.getObjUseTrash()) ? checkboxYes : checkboxNo);
-            l9 = drawWrappedText(contentStream, font, 8, colStarts[COL_ACCEPT_TRASH], yPosition, colWidth - 8,
+            l8 = drawWrappedText(contentStream, font, 8, colStarts[COL_ACCEPT_TRASH], yPosition, colWidth - 8,
                     Boolean.TRUE.equals(factory.getObjAcceptTrash()) ? checkboxYes : checkboxNo);
         }
 
         return Math.max(Math.max(Math.max(l1, l2), Math.max(l3, l4)),
-                Math.max(Math.max(l5, l6), Math.max(l7, Math.max(l8, l9))));
+                Math.max(Math.max(l5, l6), Math.max(l7, l8)));
     }
 
     // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ (стандартные шрифты) ====================

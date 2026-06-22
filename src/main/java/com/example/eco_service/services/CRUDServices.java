@@ -462,48 +462,12 @@ public class CRUDServices {
 
     // ==================== TECHNOLOGY CRUD ====================
 
-    private Long normalizeFactoryId(Long factoryId) {
-        return factoryId != null && factoryId > 0 ? factoryId : null;
-    }
-
-    private void enrichTechnologyWithFactory(Technology entity) {
-        if (entity == null || entity.getId_technology() == null) {
-            return;
+    private MagasinFactory resolveTechnologyFactory(Long factoryId) {
+        if (factoryId == null || factoryId <= 0) {
+            return null;
         }
-        magasinFactoryRepository.findFirstById_technology_Id(entity.getId_technology())
-                .ifPresent(entity::setId_magasin_factory);
-    }
-
-    private void syncTechnologyFactoryLink(Technology technology, Long factoryId) {
-        if (technology.getId_technology() == null) {
-            return;
-        }
-
-        Long techId = technology.getId_technology();
-        Long normalizedFactoryId = normalizeFactoryId(factoryId);
-
-        if (normalizedFactoryId == null) {
-            List<MagasinFactory> linked = magasinFactoryRepository.findAllById_technology_Id(techId);
-            for (MagasinFactory factory : linked) {
-                factory.setId_technology(null);
-                magasinFactoryRepository.save(factory);
-            }
-            return;
-        }
-
-        MagasinFactory factory = magasinFactoryRepository.findById(normalizedFactoryId)
-                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + normalizedFactoryId));
-
-        List<MagasinFactory> linked = magasinFactoryRepository.findAllById_technology_Id(techId);
-        for (MagasinFactory linkedFactory : linked) {
-            if (!normalizedFactoryId.equals(linkedFactory.getId_magasin_factory())) {
-                linkedFactory.setId_technology(null);
-                magasinFactoryRepository.save(linkedFactory);
-            }
-        }
-
-        factory.setId_technology(technology);
-        magasinFactoryRepository.save(factory);
+        return magasinFactoryRepository.findById(factoryId)
+                .orElseThrow(() -> new RuntimeException("MagasinFactory not found with id: " + factoryId));
     }
 
     public Technology createTechnology(TechnologyRequest request) {
@@ -522,29 +486,23 @@ public class CRUDServices {
                 .id_class_danger(classDanger)
                 .id_magazin_trash(magazinTrash)
                 .id_phys_trash(physStateTrash)
+                .id_magasin_factory(resolveTechnologyFactory(request.getId_magasin_factory()))
                 .build();
 
-        Technology saved = technologyRepository.save(entity);
-        syncTechnologyFactoryLink(saved, request.getId_magasin_factory());
-        enrichTechnologyWithFactory(saved);
-        return saved;
+        return technologyRepository.save(entity);
     }
 
     @Transactional(readOnly = true)
     public List<Technology> findAllTechnologies() {
         log.info("Fetching all Technologies");
-        List<Technology> list = technologyRepository.findAll();
-        list.forEach(this::enrichTechnologyWithFactory);
-        return list;
+        return technologyRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     public Technology findByIdTechnology(Long id) {
         log.info("Fetching Technology by id: {}", id);
-        Technology entity = technologyRepository.findById(id)
+        return technologyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Technology not found with id: " + id));
-        enrichTechnologyWithFactory(entity);
-        return entity;
     }
 
     public Technology updateTechnology(Long id, TechnologyRequest request) {
@@ -571,10 +529,9 @@ public class CRUDServices {
             entity.setId_phys_trash(physStateTrash);
         }
 
-        Technology saved = technologyRepository.save(entity);
-        syncTechnologyFactoryLink(saved, request.getId_magasin_factory());
-        enrichTechnologyWithFactory(saved);
-        return saved;
+        entity.setId_magasin_factory(resolveTechnologyFactory(request.getId_magasin_factory()));
+
+        return technologyRepository.save(entity);
     }
 
     public void deleteTechnology(Long id) {
