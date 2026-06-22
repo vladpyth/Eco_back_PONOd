@@ -173,8 +173,8 @@ public class PdfReportGenerator {
 
     private float drawHeader(PDPageContentStream contentStream, PDPage page,
                              PDType0Font font, float yPosition) throws IOException {
-        String title = "Реестр объектов хранения, захоронения и обезвреживания отходов";
-        String subtitle = "(обезвреживание)";
+        String title = "Реестр объектов по использованию отходов";
+        String subtitle = "(часть I)";
 
         if (useStandardFonts || font == null) {
             // Используем стандартные шрифты
