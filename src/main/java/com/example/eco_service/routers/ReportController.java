@@ -4,6 +4,7 @@ package com.example.eco_service.routers;
 import com.example.eco_service.config.PdfReportGenerator;
 import com.example.eco_service.dto.main_dto.WasteTypeReportDto;
 import com.example.eco_service.dto.main_dto.WasteTypeReportDto;
+import com.example.eco_service.entities.Region;
 import com.example.eco_service.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +33,12 @@ public class ReportController {
 
     private final ReportService reportService;
     private final PdfReportGenerator pdfGenerator;
+
+    @GetMapping("/client-data")
+    @Operation(summary = "получить отчет")
+    public ResponseEntity<List<WasteTypeReportDto>> getAllForReport() {
+        return ResponseEntity.ok(reportService.getAllForReport());
+    }
 
     @GetMapping("/pdf")
     @Operation(summary = "Сгенерировать PDF отчёт по всем типам отходов")

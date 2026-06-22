@@ -253,7 +253,7 @@ public class PdfReportGenerator {
 
         if (useStandardFonts || font == null) {
             l1 = drawWrappedTextStandard(contentStream, colStarts[COL_NAME_OBJ], yPosition, colWidth - 8,
-                    formatNameWithYnp(factory.getNameObj(), factory.getYnp()));
+                    formatObjectNameWithMeta(factory.getNameObj(), factory.getRegistrationNumber(), factory.getYnp()));
             l2 = drawWrappedTextStandard(contentStream, colStarts[COL_ADDRESS_OBJ], yPosition, colWidth - 8, getValue(factory.getAddressObj()));
             l3 = drawWrappedTextStandard(contentStream, colStarts[COL_PHONE_OBJ], yPosition, colWidth - 8, getValue(factory.getPhoneObj()));
             l4 = drawWrappedTextStandard(contentStream, colStarts[COL_NAME_OWN], yPosition, colWidth - 8, getValue(factory.getNameOwn()));
@@ -266,7 +266,7 @@ public class PdfReportGenerator {
                     Boolean.TRUE.equals(factory.getObjAcceptTrash()) ? checkboxYes : checkboxNo);
         } else {
             l1 = drawWrappedText(contentStream, font, 8, colStarts[COL_NAME_OBJ], yPosition, colWidth - 8,
-                    formatNameWithYnp(factory.getNameObj(), factory.getYnp()));
+                    formatObjectNameWithMeta(factory.getNameObj(), factory.getRegistrationNumber(), factory.getYnp()));
             l2 = drawWrappedText(contentStream, font, 8, colStarts[COL_ADDRESS_OBJ], yPosition, colWidth - 8, getValue(factory.getAddressObj()));
             l3 = drawWrappedText(contentStream, font, 8, colStarts[COL_PHONE_OBJ], yPosition, colWidth - 8, getValue(factory.getPhoneObj()));
             l4 = drawWrappedText(contentStream, font, 8, colStarts[COL_NAME_OWN], yPosition, colWidth - 8, getValue(factory.getNameOwn()));
@@ -343,12 +343,12 @@ public class PdfReportGenerator {
         return str.isEmpty() || str.equals("null") ? "—" : str;
     }
 
-    private String formatNameWithYnp(String name, String ynp) {
+    /** Наименование объекта + реестровый номер и УНП (как в реестре). */
+    private String formatObjectNameWithMeta(String name, String registrationNumber, String ynp) {
         String orgName = getValue(name);
-        if (ynp == null || ynp.isBlank()) {
-            return orgName;
-        }
-        return orgName + "\nУНП: " + ynp.trim();
+        String reg = getValue(registrationNumber);
+        String unp = getValue(ynp);
+        return orgName + "\nРеестровый номер: " + reg + "\nУНП: " + unp;
     }
 
     private void writeText(PDPageContentStream contentStream, PDType0Font font, int size,

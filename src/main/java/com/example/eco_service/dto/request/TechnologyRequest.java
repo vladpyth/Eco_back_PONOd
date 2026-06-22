@@ -23,4 +23,7 @@ public class TechnologyRequest {
     @Schema(description = "ID физического состояния отхода", example = "3")
     @NotNull(message = "ID физического состояния обязателен")
     private Long id_phys_trash;
+
+    @Schema(description = "ID предприятия", example = "7")
+    private Long id_magasin_factory;
 }

@@ -30,6 +30,10 @@ public class Technology {
     @JoinColumn(name = "id_phys_trash")
     private PhysStateTrash id_phys_trash;
 
+    /** Предприятие через MagasinFactory.id_technology (обратная связь). */
+    @Transient
+    private MagasinFactory id_magasin_factory;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_technology;
